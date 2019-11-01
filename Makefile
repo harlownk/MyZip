@@ -1,7 +1,10 @@
-all : client
+all : ./build/client
 
-client : src/client.cc
-	g++ -Wall -g -std=c++11 -o build/client src/client.cc
+./build/client : src/client.cc src/client.h ./build
+	g++ -Wall -g -std=c++11 -o ./build/client src/client.cc
+
+./build : 
+	mkdir $@
 
 clean : 
-	-rm -f build/*
+	@rm -fr ./build

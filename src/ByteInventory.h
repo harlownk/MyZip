@@ -15,13 +15,13 @@ class ByteInventory {
 
   // Operators:
   // Overridden assignment operator.  
-  ByteInventory &operator=(ByteInventory &other);
+  ByteInventory &operator=(const ByteInventory &other);
 
   // Increment operator
-  ByteInventory &operator+=(ByteInventory &increment);
+  ByteInventory operator+=(const ByteInventory &increment);
 
   // Decrement operator
-  ByteInventory &operator-=(ByteInventory &increment);
+  ByteInventory operator-=(const ByteInventory &increment);
 
  private:
   int *byteCounts_;

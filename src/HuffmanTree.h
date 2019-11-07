@@ -2,15 +2,19 @@
 
 class HuffmanTree {
  public:
-  HuffmanTree(const ByteInventory &inventory) {
-
-  }
- private:
+  HuffmanTree(int counts[], int size);
+  ~HuffmanTree(); 
+ public:
   class HuffmanNode {
    public:
-    int count_;
+    HuffmanNode(int code, int count);
+    ~HuffmanNode();
+    int operator<(const HuffmanNode &other);
+
+    // Fields:
     int byteCode_;
-    HuffmanNode *children_[2];
+    int count_;
+    HuffmanNode **children_;
   };
-  HuffmanNode *root;
+  HuffmanNode *root_;
 };

@@ -6,6 +6,7 @@
 
 #include "client.h"
 #include "ByteInventory.h"
+#include "HuffmanTree.h"
 
 int main(int argc, char** argv) {
   if (argc == 1) {
@@ -43,7 +44,8 @@ int main(int argc, char** argv) {
     for (int i = 0; i < arrSize; i++) {
       counts[i] = bi.getCount(i);
     }
-    
+    // Create the tree
+    HuffmanTree tree(counts, arrSize);
     // Make translation lookup-table from tree
     // Encode the lookup-table into the file
     // Read through file, writing new encoded file as we go.

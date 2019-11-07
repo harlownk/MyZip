@@ -2,7 +2,7 @@
 
 #include <string>
 
-#define NUM_ITEMS 258
+#define BI_NUM_ITEMS 256
 
 // ByteInventory that contains a count of each byte.
 class ByteInventory {
@@ -15,8 +15,12 @@ class ByteInventory {
   // Cleans up the ByteInventory.
   ~ByteInventory();
 
-  // Add a new item to the inventory.
-  ByteInventory &addByte(int byte, int count);
+  // Add a new item to the inventory. If the byte is invalid there is no effect.
+  void addByte(int byte, int count=1);
+
+  // Gets the count of the given byte in the inventory. Returns -1 if the byte
+  // is invalid.
+  int getCount(int byte) const;
 
   // Operators:
   // Overridden assignment operator.  
@@ -25,8 +29,6 @@ class ByteInventory {
   // Increment operator
   ByteInventory &operator+=(const ByteInventory &increment);
 
-  // Decrement operator
-  ByteInventory &operator-=(const ByteInventory &increment);
 
   // toString, printing a list of the byte values and the associated counts
   // if the count is > 0.
@@ -38,7 +40,4 @@ class ByteInventory {
 };
 
 ByteInventory operator+(const ByteInventory &first, 
-                        const ByteInventory &second);
-
-ByteInventory operator-(const ByteInventory &first, 
                         const ByteInventory &second);

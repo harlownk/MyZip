@@ -1,8 +1,8 @@
 // Copyright Nicholas Harlow
 
-class HuffmanTree {
- public:
-  
- private:
-  Node root_;
+#include "HuffmanTree.h"
+#include "ByteInventory.h"
+
+HuffmanTree::HuffmanTree(int[] counts, int size) {
+    
 }

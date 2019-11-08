@@ -47,6 +47,7 @@ int main(int argc, char** argv) {
     // Create the tree
     HuffmanTree tree(counts, arrSize);
     // Make translation lookup-table from tree
+    tree.getEncodings();
     // Encode the lookup-table into the file
     // Read through file, writing new encoded file as we go.
   } else if (std::string(argv[1]).compare("u") == 0) {  // Unzip mode

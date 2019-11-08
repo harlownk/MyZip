@@ -46,8 +46,6 @@ void HuffmanTree::traverseEncodings(HuffmanNode *root,
                                     std::map<int, std::string> *map, 
                                     std::string currEncoding) {
   if (root->byteCode_ != -1) {
-    // std::cout << std::to_string(root->byteCode_) << std::endl;
-    std::cout << currEncoding << std::endl;
     map->insert(std::pair<int, std::string>(root->byteCode_, currEncoding));
   } else {
     traverseEncodings(root->children_[0], map, currEncoding + std::to_string(0));

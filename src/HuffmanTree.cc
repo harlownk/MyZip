@@ -8,6 +8,8 @@
 
 #include "HuffmanTree.h"
 
+// TODO: Finish fixing memory errors from valgrind.
+
 HuffmanTree::HuffmanTree(int *counts, int size) : root_(nullptr) {
   auto cmp = [](HuffmanNode *left, HuffmanNode *right) { return left->count_ > right->count_; };
   std::priority_queue<HuffmanNode *, std::vector<HuffmanNode *>, decltype(cmp)> queue(cmp);

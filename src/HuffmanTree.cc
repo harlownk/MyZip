@@ -20,8 +20,8 @@ HuffmanTree::HuffmanTree(int counts[], int size) {
     }
   }
   // add the other items like a seperator item, and an EOF character representation?
-  queue.push(new HuffmanNode(500, 1));
-  queue.push(new HuffmanNode(1000, max));
+  queue.push(new HuffmanNode(500, 1));  // Represents a single EOF character
+  queue.push(new HuffmanNode(1000, max + 1));  // Represents some delimiter
   while (queue.size() > 1) {
     HuffmanNode *nodefirst = queue.top();
     queue.pop();

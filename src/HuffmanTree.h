@@ -1,5 +1,8 @@
 // Copyright Nicholas Harlow
 
+#ifndef SRC_HUFFMANTREE_H_
+#define SRC_HUFFMANTREE_H_
+
 #include <string>
 #include <map>
 
@@ -7,7 +10,7 @@ class HuffmanTree {
  public:
   // Constructor that takes the array of the counts of bytes from a file
   // and makes a tree representing the possible encodings.
-  HuffmanTree(int counts[], int size);
+  HuffmanTree(int *counts, int size);
   // Destructs the tree.
   ~HuffmanTree(); 
 
@@ -32,3 +35,5 @@ class HuffmanTree {
                          std::map<int, std::string> *map, 
                          std::string currEncoding);
 };
+
+#endif  // SRC_HUFFMANTREE_H_

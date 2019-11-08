@@ -18,15 +18,31 @@ int main(int argc, char** argv) {
     std::cerr << "Usage: ./client <mode> <filename>" << std::endl;
     exit(EXIT_FAILURE);
   }
-  std::string file_name = argv[2];
+  std::string *file_name = new std::string(argv[2]);
   if (std::string(argv[1]).compare("z") == 0) {  // Zip mode
-    std::cout << "Zipping " << file_name << std::endl;
+    ZipFile(*file_name);
+  } else if (std::string(argv[1]).compare("u") == 0) {  // Unzip mode
+     UnzipFile(*file_name);
+  } else {
+    std::cerr << "mode " << argv[1] << " not recognized." << std::endl; 
+  }
+
+  delete file_name;
+  exit(EXIT_SUCCESS);
+}
+
+static void PrintCommandHelp() {
+    std::cout << "./client is used to compress text files." << std::endl;
+}
+
+static void ZipFile(std::string file_name) {
+  std::cout << "Zipping " << file_name << std::endl;
     // Open file.
     std::ifstream currfile;
     currfile.open(file_name, std::ios::in | std::ios::binary);
     if (!currfile.is_open()) {
       std::cerr << "Error encountered while opening " << file_name << std::endl;
-      return EXIT_FAILURE;
+      exit(EXIT_FAILURE);
     }
     // Make a byte inventory of the file.
     // Read everything, counting each byte as we go in this ByteInventory.
@@ -51,17 +67,15 @@ int main(int argc, char** argv) {
     // Encode the lookup-table into the file  Write it as a header?
       // Write a lookup file???
     // Read through file, writing new encoded file as we go.
-  } else if (std::string(argv[1]).compare("u") == 0) {  // Unzip mode
-    std::cout << "Unzipping " << file_name << std::endl;
-    // Open file.
-    // Parse translation lookup-table from header into memory
-    // Read the encoded file translating and writing decoded file. 
-  } else {
-    std::cerr << "mode " << argv[1] << " not recognized." << std::endl; 
-  }
-  exit(EXIT_SUCCESS);
+
+    delete[] counts;
+    delete encodingMap;
 }
 
-static void PrintCommandHelp() {
-    std::cout << "./client is used to compress text files." << std::endl;
+
+static void UnzipFile(std::string file_name) {
+  std::cout << "Unzipping " << file_name << std::endl;
+      // Open file.
+      // Parse translation lookup-table from header into memory
+      // Read the encoded file translating and writing decoded file.
 }

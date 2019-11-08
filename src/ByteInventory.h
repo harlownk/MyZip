@@ -1,5 +1,8 @@
 // Copyright Nicholas Harlow
 
+#ifndef SRC_BYTEINVENTORY_H_
+#define SRC_BYTEINVENTORY_H_
+
 #include <string>
 
 #define BI_NUM_ITEMS 256
@@ -41,3 +44,5 @@ class ByteInventory {
 
 ByteInventory operator+(const ByteInventory &first, 
                         const ByteInventory &second);
+
+#endif  // SRC_BYTEINVENTORY_H_

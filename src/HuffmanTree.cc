@@ -8,7 +8,7 @@
 
 #include "HuffmanTree.h"
 
-HuffmanTree::HuffmanTree(int counts[], int size) {
+HuffmanTree::HuffmanTree(int *counts, int size) : root_(nullptr) {
   auto cmp = [](HuffmanNode *left, HuffmanNode *right) { return left->count_ > right->count_; };
   std::priority_queue<HuffmanNode *, std::vector<HuffmanNode *>, decltype(cmp)> queue(cmp);
   int max = 0;
@@ -65,6 +65,10 @@ HuffmanTree::HuffmanNode::HuffmanNode(int code, int count) {
 }
 
 HuffmanTree::HuffmanNode::~HuffmanNode() {
+  if (children_[0] != nullptr)
+    delete children_[0];
+  if (children_[1] != nullptr)
+    delete children_[1];
   delete[] children_;
 }
 

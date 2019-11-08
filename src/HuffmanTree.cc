@@ -11,13 +11,17 @@
 HuffmanTree::HuffmanTree(int counts[], int size) {
   auto cmp = [](HuffmanNode *left, HuffmanNode *right) { return left->count_ > right->count_; };
   std::priority_queue<HuffmanNode *, std::vector<HuffmanNode *>, decltype(cmp)> queue(cmp);
+  int max = 0;
   for (int i = 0; i < size; i++) {
     if (counts[i] > 0) {
       HuffmanNode *node = new HuffmanNode(i, counts[i]);
       queue.push(node);
+      max = counts[i] > max ? counts[i] : max;
     }
   }
   // add the other items like a seperator item, and an EOF character representation?
+  queue.push(new HuffmanNode(500, 1));
+  queue.push(new HuffmanNode(1000, max));
   while (queue.size() > 1) {
     HuffmanNode *nodefirst = queue.top();
     queue.pop();

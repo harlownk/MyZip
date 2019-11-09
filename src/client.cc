@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <climits>
 #include <fstream>
 
 #include "client.h"
@@ -55,16 +56,22 @@ static void ZipFile(std::string file_name) {
     currfile.close();
     // Make an encoding tree:
     // Convert BI into an array.
-    int arrSize = BI_NUM_ITEMS;
-    int *counts = new int[BI_NUM_ITEMS];
-    for (int i = 0; i < arrSize; i++) {
+    int arrSize = BI_NUM_ITEMS + 2;
+    int *counts = new int[BI_NUM_ITEMS + 2];
+    for (int i = 0; i < arrSize - 2; i++) {
       counts[i] = bi.getCount(i);
     }
+    counts[arrSize - 4] = 1;   // This value is the EOF 'bytevalue'
+    // TODO: Delimiter count MIGHT have an impact on the efficientcy.  
+    counts[arrSize - 3] = INT_MAX;  // This is the value used as a delimiter 
     // Create the tree
     HuffmanTree tree(counts, arrSize);
     // Make translation lookup-table from tree
     std::map<int, std::string> *encodingMap = tree.getEncodings();
     // Encode the lookup-table into the file  Write it as a header?
+    for (auto it = encodingMap->begin(); it != encodingMap->end(); it++) {
+      std::cout << (char) it->first << " " << it->second << std::endl;
+    }
       // Write a lookup file???
     // Read through file, writing new encoded file as we go.
 

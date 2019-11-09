@@ -13,17 +13,12 @@
 HuffmanTree::HuffmanTree(int *counts, int size) : root_(nullptr) {
   auto cmp = [](HuffmanNode *left, HuffmanNode *right) { return left->count_ > right->count_; };
   std::priority_queue<HuffmanNode *, std::vector<HuffmanNode *>, decltype(cmp)> queue(cmp);
-  int max = 0;
   for (int i = 0; i < size; i++) {
     if (counts[i] > 0) {
       HuffmanNode *node = new HuffmanNode(i, counts[i]);
       queue.push(node);
-      max = counts[i] > max ? counts[i] : max;
     }
   }
-  // add the other items like a seperator item, and an EOF character representation?
-  queue.push(new HuffmanNode(500, 1));  // Represents a single EOF character
-  queue.push(new HuffmanNode(1000, max + 1));  // Represents some delimiter
   while (queue.size() > 1) {
     HuffmanNode *nodefirst = queue.top();
     queue.pop();
@@ -31,8 +26,8 @@ HuffmanTree::HuffmanTree(int *counts, int size) : root_(nullptr) {
     queue.pop();
     int newSum = nodefirst->count_ + nodesecond->count_;
     HuffmanNode *newNode = new HuffmanNode(-1, newSum);
-    newNode->children_[0] = nodefirst;
-    newNode->children_[1] = nodesecond;
+    newNode->left_ = nodefirst;
+    newNode->right_ = nodesecond;
     queue.push(newNode);
   }
   root_ = queue.top();
@@ -54,8 +49,8 @@ void HuffmanTree::traverseEncodings(HuffmanNode *root,
   if (root->byteCode_ != -1) {
     map->insert(std::pair<int, std::string>(root->byteCode_, currEncoding));
   } else {
-    traverseEncodings(root->children_[0], map, currEncoding + std::to_string(0));
-    traverseEncodings(root->children_[1], map, currEncoding + std::to_string(1));
+    traverseEncodings(root->left_, map, currEncoding + std::to_string(0));
+    traverseEncodings(root->right_, map, currEncoding + std::to_string(1));
   }
 }
 
@@ -63,15 +58,18 @@ void HuffmanTree::traverseEncodings(HuffmanNode *root,
 HuffmanTree::HuffmanNode::HuffmanNode(int code, int count) {
   byteCode_ = code;
   count_ = count;
-  children_ = new HuffmanNode*[2];
+  left_ = nullptr;
+  right_ = nullptr;
 }
 
 HuffmanTree::HuffmanNode::~HuffmanNode() {
-  if (children_[0] != nullptr)
-    delete children_[0];
-  if (children_[1] != nullptr)
-    delete children_[1];
-  delete[] children_;
+  if (left_) {
+    delete left_;
+  }
+  if (right_) {
+    delete right_;
+  }
+  
 }
 
 int HuffmanTree::HuffmanNode::operator<(const HuffmanNode &other) {

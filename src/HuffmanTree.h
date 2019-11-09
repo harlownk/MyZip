@@ -6,9 +6,7 @@
 #include <string>
 #include <map>
 
-// TODO: Finish the documentation for these 2 classes.  Include the 'dummy'
-// values. Maybe push this to the client to add their desired values to
-// the array before passing it in. This is probably the smarter idea.
+// TODO: Finish the documentation for these 2 classes. 
 
 class HuffmanTree {
  public:
@@ -31,7 +29,8 @@ class HuffmanTree {
     // Fields:
     int byteCode_;
     int count_;
-    HuffmanNode **children_;
+    HuffmanNode *left_;
+    HuffmanNode *right_;
   };
   HuffmanNode *root_;
  private:

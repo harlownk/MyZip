@@ -61,9 +61,9 @@ static void ZipFile(std::string file_name) {
     for (int i = 0; i < arrSize - 2; i++) {
       counts[i] = bi.getCount(i);
     }
-    counts[arrSize - 4] = 1;   // This value is the EOF 'bytevalue'
+    counts[arrSize - 2] = 1;   // This value is the EOF 'bytevalue'
     // TODO: Delimiter count MIGHT have an impact on the efficientcy.  
-    counts[arrSize - 3] = 300;  // This is the value used as a delimiter 
+    counts[arrSize - 1] = 300;  // This is the value used as a delimiter 
     // Create the tree
     HuffmanTree tree(counts, arrSize);
     // Make translation lookup-table from tree
@@ -72,7 +72,6 @@ static void ZipFile(std::string file_name) {
     // for (auto it = encodingMap->begin(); it != encodingMap->end(); it++) {
     //   std::cout << (char) it->first << " " << it->second << std::endl;
     // }
-    
     // TODO: Decide on a header layout and how to write it properly.
     // Read through file, writing new encoded file as we go.
     WriteZipFile(file_name, encodingMap);
@@ -88,4 +87,9 @@ static void UnzipFile(std::string file_name) {
       // Open file.
       // Parse translation lookup-table from header into memory
       // Read the encoded file translating and writing decoded file.
+}
+
+static int WriteZipFile(std::string file_name, 
+                        std::unordered_map<int, std::string> *map) {
+  return 0;
 }

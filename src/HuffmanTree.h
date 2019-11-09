@@ -4,7 +4,7 @@
 #define SRC_HUFFMANTREE_H_
 
 #include <string>
-#include <map>
+#include <unordered_map>
 
 class HuffmanTree {
  public:
@@ -37,7 +37,7 @@ class HuffmanTree {
   HuffmanNode *root_;
  private:
   void traverseEncodings(HuffmanNode *root, 
-                         std::map<int, std::string> *map, 
+                         std::unordered_map<int, std::string> *map, 
                          std::string currEncoding);
 };
 

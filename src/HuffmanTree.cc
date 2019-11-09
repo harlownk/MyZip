@@ -2,7 +2,7 @@
 
 #include <queue>
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <iostream>
 #include <cstdlib>
 
@@ -12,11 +12,13 @@
 
 HuffmanTree::HuffmanTree(int *counts, int size) : root_(nullptr) {
   auto cmp = [](HuffmanNode *left, HuffmanNode *right) { return *left < *right; };
-  std::priority_queue<HuffmanNode *, std::vector<HuffmanNode *>, decltype(cmp)> queue(cmp);
+  std::priority_queue<HuffmanNode *, 
+                      std::vector<HuffmanNode *>, 
+                      decltype(cmp)>  queue(cmp);
   for (int i = 0; i < size; i++) {
     if (counts[i] > 0) {
       HuffmanNode *node = new HuffmanNode(i, counts[i]);
-      queue.push(node);
+      queue.push(node); 
     }
   }
   while (queue.size() > 1) {
@@ -37,14 +39,14 @@ HuffmanTree::~HuffmanTree() {
   delete root_;
 }
 
-std::map<int, std::string> *HuffmanTree::getEncodings() {
-  std::map<int, std::string> *encodingMap = new std::map<int, std::string>;
+std::unordered_map<int, std::string> *HuffmanTree::getEncodings() {
+  auto *encodingMap = new std::unordered_map<int, std::string>;
   traverseEncodings(root_, encodingMap, "");
   return encodingMap;
 }
 
 void HuffmanTree::traverseEncodings(HuffmanNode *root, 
-                                    std::map<int, std::string> *map, 
+                                    std::unordered_map<int, std::string> *map, 
                                     std::string currEncoding) {
   if (root->byteCode_ != -1) {
     map->insert(std::pair<int, std::string>(root->byteCode_, currEncoding));

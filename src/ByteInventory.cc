@@ -6,6 +6,9 @@
 ByteInventory::ByteInventory() {
   byteCounts_ = new int[BI_NUM_ITEMS];
   size_ = BI_NUM_ITEMS;
+  for (int i = 0; i < size_; i++) {
+    byteCounts_[i] = 0;
+  }
 }
 
 ByteInventory::ByteInventory(const ByteInventory &other) {

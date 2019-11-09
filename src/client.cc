@@ -37,7 +37,7 @@ static void PrintCommandHelp() {
 }
 
 static void ZipFile(std::string file_name) {
-  std::cout << "Zipping " << file_name << std::endl;
+  std::cout << "Zipping " << file_name << "..." << std::endl;
     // Open file.
     std::ifstream currfile;
     currfile.open(file_name, std::ios::in | std::ios::binary);
@@ -63,20 +63,23 @@ static void ZipFile(std::string file_name) {
     }
     counts[arrSize - 4] = 1;   // This value is the EOF 'bytevalue'
     // TODO: Delimiter count MIGHT have an impact on the efficientcy.  
-    counts[arrSize - 3] = INT_MAX;  // This is the value used as a delimiter 
+    counts[arrSize - 3] = 300;  // This is the value used as a delimiter 
     // Create the tree
     HuffmanTree tree(counts, arrSize);
     // Make translation lookup-table from tree
-    std::map<int, std::string> *encodingMap = tree.getEncodings();
+    std::unordered_map<int, std::string> *encodingMap = tree.getEncodings();
     // Encode the lookup-table into the file  Write it as a header?
-    for (auto it = encodingMap->begin(); it != encodingMap->end(); it++) {
-      std::cout << (char) it->first << " " << it->second << std::endl;
-    }
-      // Write a lookup file???
+    // for (auto it = encodingMap->begin(); it != encodingMap->end(); it++) {
+    //   std::cout << (char) it->first << " " << it->second << std::endl;
+    // }
+    
+    // TODO: Decide on a header layout and how to write it properly.
     // Read through file, writing new encoded file as we go.
+    WriteZipFile(file_name, encodingMap);
 
     delete[] counts;
     delete encodingMap;
+    std::cout << "Zip Successful." << std::endl;
 }
 
 

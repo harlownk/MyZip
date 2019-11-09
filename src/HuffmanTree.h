@@ -16,14 +16,18 @@ class HuffmanTree {
   // Destructs the tree.
   ~HuffmanTree(); 
 
-  std::map<int, std::string> *getEncodings();
+  // Returns a map that goes between ints and the string binary representation
+  std::unordered_map<int, std::string> *getEncodings();
   
 
   // Node class that makes up the HuffmanTree 
   class HuffmanNode {
    public:
+    // Creates a childless node with the givenn code and count.
     HuffmanNode(int code, int count);
+    // Cleans up the children of the node.
     ~HuffmanNode();
+    // Implements lessthan comparison.
     int operator<(const HuffmanNode &other);
 
     // Fields:

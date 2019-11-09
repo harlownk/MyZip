@@ -11,7 +11,7 @@
 // TODO: Finish fixing memory errors from valgrind.
 
 HuffmanTree::HuffmanTree(int *counts, int size) : root_(nullptr) {
-  auto cmp = [](HuffmanNode *left, HuffmanNode *right) { return left->count_ > right->count_; };
+  auto cmp = [](HuffmanNode *left, HuffmanNode *right) { return *left < *right; };
   std::priority_queue<HuffmanNode *, std::vector<HuffmanNode *>, decltype(cmp)> queue(cmp);
   for (int i = 0; i < size; i++) {
     if (counts[i] > 0) {
@@ -49,8 +49,8 @@ void HuffmanTree::traverseEncodings(HuffmanNode *root,
   if (root->byteCode_ != -1) {
     map->insert(std::pair<int, std::string>(root->byteCode_, currEncoding));
   } else {
-    traverseEncodings(root->left_, map, currEncoding + std::to_string(0));
-    traverseEncodings(root->right_, map, currEncoding + std::to_string(1));
+    traverseEncodings(root->left_, map, currEncoding + "0");
+    traverseEncodings(root->right_, map, currEncoding + "1");
   }
 }
 

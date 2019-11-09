@@ -6,8 +6,6 @@
 #include <string>
 #include <map>
 
-// TODO: Finish the documentation for these 2 classes. 
-
 class HuffmanTree {
  public:
   // Constructor that takes the array of the counts of bytes from a file

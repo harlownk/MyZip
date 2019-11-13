@@ -89,7 +89,18 @@ static void UnzipFile(std::string file_name) {
       // Read the encoded file translating and writing decoded file.
 }
 
-static int WriteZipFile(std::string file_name, 
+static int WriteZipFile(std::string orig_file_name, 
                         std::unordered_map<int, std::string> *map) {
-  return 0;
+  std::ofstream newFile();
+  WriteZipHeader();
+  WriteZipBody();
+  return 1;
+}
+
+static int WriteZipHeader() {
+  return 1;
+}
+
+static int WriteZipBody() {
+  return 1;
 }

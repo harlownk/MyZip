@@ -34,6 +34,7 @@ class HuffmanTree {
     HuffmanNode *left_;
     HuffmanNode *right_;
   };
+  
   HuffmanNode *root_;
  private:
   void traverseEncodings(HuffmanNode *root, 

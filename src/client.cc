@@ -25,18 +25,24 @@ int main(int argc, char** argv) {
   }
 
   // Execute the commands.
-  string *file_name = new string(argv[2]);
+  string file_name(argv[2]);
   HuffmanZipper zipper;
   if (string(argv[1]).compare("z") == 0) {  // Zip mode
-    zipper.ZipFile(*file_name);
+    std::cout << "Zipping " << file_name << "..." << std::endl;
+    if (zipper.ZipFile(file_name)) {
+      std::cout << "Zip Successful." << std::endl;
+    } else {
+      std::cout << "Zip Unsuccessful." << std::endl;
+      exit(EXIT_FAILURE);
+    }
   } else if (string(argv[1]).compare("u") == 0) {  // Unzip mode
-    zipper.UnzipFile(*file_name);
+    zipper.UnzipFile(file_name);
   } else {
-    std::cerr << "mode " << argv[1] << " not recognized." << std::endl; 
+    std::cerr << "mode " << argv[1] << " not recognized." << std::endl;
+    exit(EXIT_FAILURE);
   }
-
-  delete file_name;
   exit(EXIT_SUCCESS);
+
 }
 
 static void PrintUsage() {

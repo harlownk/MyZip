@@ -23,7 +23,6 @@ static const string zipFileEnding = ".mzip";
 
 
 bool HuffmanZipper::ZipFile(string file_name) {
-  std::cout << "Zipping " << file_name << "..." << std::endl;
   // Open file.
   std::ifstream currfile;
   currfile.open(file_name, std::ios::in | std::ios::binary);

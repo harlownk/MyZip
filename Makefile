@@ -9,8 +9,10 @@ all : ./build/client
 ./build/HuffmanTree.o : ./src/HuffmanTree.cc ./src/HuffmanTree.h | ./build 
 	g++ -Wall -g -std=c++11 -o $@ -c src/HuffmanTree.cc
 
-./build/client : ./build/ByteInventory.o  ./build/HuffmanTree.o ./build/client.o | ./build
-	g++ -Wall -g -std=c++11 -o $@ ./build/ByteInventory.o ./build/client.o ./build/HuffmanTree.o
+./build/HuffmanZipper.o : ./src/HuffmanZipper.cc ./src/HuffmanZipper.h | ./build
+	g++ -Wall -g -std=c++11 -o $@ -c src/HuffmanZipper.cc
+./build/client : ./build/ByteInventory.o  ./build/HuffmanTree.o ./build/HuffmanZipper.o ./build/client.o | ./build
+	g++ -Wall -g -std=c++11 -o $@ ./build/ByteInventory.o ./build/client.o ./build/HuffmanTree.o ./build/HuffmanZipper.o
 
 # Test File build.
 ./build/test.o : ./src/test.cc | ./build

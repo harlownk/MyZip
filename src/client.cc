@@ -12,22 +12,29 @@
 #include "ByteInventory.h"
 #include "HuffmanTree.h"
 
+using std::string;
+
 static const int arrSize = BI_NUM_ITEMS + 2;
+static const int delimiterVal = arrSize - 1;
+static const int eofVal = arrSize - 2;
+
+static const int32_t magicWord = 0xc0defade;
+static const string zipFileEnding = ".mzip";
 
 int main(int argc, char** argv) {
+  // Do Preliminary checks.
   if (argc == 1) {
     // Print client help/usage
     PrintCommandHelp();
-    exit(EXIT_SUCCESS);
   } else if (argc != 3) {
-    // Make sure to update when dev continues.
-    std::cerr << "Usage: ./client <mode> <filename>" << std::endl;
-    exit(EXIT_FAILURE);
+    PrintUsage();
   }
-  std::string *file_name = new std::string(argv[2]);
-  if (std::string(argv[1]).compare("z") == 0) {  // Zip mode
+
+  // Execute the commands.
+  string *file_name = new string(argv[2]);
+  if (string(argv[1]).compare("z") == 0) {  // Zip mode
     ZipFile(*file_name);
-  } else if (std::string(argv[1]).compare("u") == 0) {  // Unzip mode
+  } else if (string(argv[1]).compare("u") == 0) {  // Unzip mode
      UnzipFile(*file_name);
   } else {
     std::cerr << "mode " << argv[1] << " not recognized." << std::endl; 
@@ -37,11 +44,18 @@ int main(int argc, char** argv) {
   exit(EXIT_SUCCESS);
 }
 
-static void PrintCommandHelp() {
-    std::cout << "./client is used to compress text files." << std::endl;
+static void PrintUsage() {
+  // Make sure to update when dev continues.
+  std::cerr << "Usage: ./client <mode> <filename>" << std::endl;
+  exit(EXIT_FAILURE);
 }
 
-static void ZipFile(std::string file_name) {
+static void PrintCommandHelp() {
+  std::cout << "./client is used to compress text files." << std::endl;
+  exit(EXIT_SUCCESS);
+}
+
+static void ZipFile(string file_name) {
   std::cout << "Zipping " << file_name << "..." << std::endl;
     // Open file.
     std::ifstream currfile;
@@ -59,27 +73,33 @@ static void ZipFile(std::string file_name) {
       bi.addByte(currval);
     }
     currfile.close();
+
     // Make an encoding tree:
     // Convert BI into an array.
-    
     int *counts = new int[BI_NUM_ITEMS + 2];
     for (int i = 0; i < arrSize - 2; i++) {
       counts[i] = bi.getCount(i);
     }
-    counts[arrSize - 2] = 1;   // This value is the EOF 'bytevalue'
+    counts[eofVal] = 1;   // This value is the EOF 'bytevalue'
     // TODO: Delimiter count MIGHT have an impact on the efficientcy.  
-    counts[arrSize - 1] = 300;  // This is the value used as a delimiter 
+    counts[delimiterVal] = 300;  // This is the value used as a delimiter 
     // Create the tree
     HuffmanTree tree(counts, arrSize);
     // Make translation lookup-table from tree
-    std::unordered_map<int, std::string> *encodingMap = tree.getEncodings();
+    std::unordered_map<int, string> *encodingMap = tree.getEncodings();
     // Encode the lookup-table into the file  Write it as a header?
     // for (auto it = encodingMap->begin(); it != encodingMap->end(); it++) {
     //   std::cout << (char) it->first << " " << it->second << std::endl;
     // }
-    // TODO: Decide on a header layout and how to write it properly.
-    // Read through file, writing new encoded file as we go.
-    WriteZipFile(file_name, encodingMap);
+
+    
+    std::ofstream zipFile(file_name + zipFileEnding, std::ios_base::binary);
+    // TODO: Implememnt writing of the header.
+    // WriteZipFileHeader(, zipFile, );
+    // TODO: Implement writing the encoding map.
+    // WriteZipFileEncodings(, zipFile, );
+    // TODO: Check if this file opens correctly (error handle etc.)
+    WriteZipFileBody(file_name, zipFile, encodingMap);
 
     delete[] counts;
     delete encodingMap;
@@ -87,78 +107,83 @@ static void ZipFile(std::string file_name) {
 }
 
 
-static void UnzipFile(std::string file_name) {
+static void UnzipFile(string file_name) {
   std::cout << "Unzipping " << file_name << std::endl;
       // Open file.
+      // Check header and file integrity.
       // Parse translation lookup-table from header into memory
       // Read the encoded file translating and writing decoded file.
 }
 
-static int WriteZipFile(std::string origFileName, 
-                        std::unordered_map<int, std::string> *map) {
+static int WriteZipFileBody(string origFileName, 
+                            std::ofstream &zipFile, 
+                            std::unordered_map<int, string> *map) {
   // Get the file names for both original and new file.
-  char *prevFileName = new char[origFileName.size() + 1]();
-  std::copy(origFileName.begin(), origFileName.end(), prevFileName);
 
-  std::string extendedFileName = origFileName + ".mzip";
-  char *zipFileName = new char[extendedFileName.size() + 1]();
-  std::copy(extendedFileName.begin(), extendedFileName.end(), zipFileName);
   // Open the files for reading and writing.
-  FILE *prevFile = fopen(prevFileName, "rb");
-  FILE *zipFile = fopen(zipFileName, "wb");
-  // Make a buffer for reading into.
-  int8_t buffer[READ_BUFFER_SIZE];
+
+  // TODO Check if this file opens correctly.
+  std::ifstream oldFile(origFileName, std::ios_base::binary);
+  
+  zipFile.seekp(ZIP_HEADER_LENGTH);
 
   // Read through the whole file.
-  int numRead = 0;
-  std::string encodings("");
-  while ((numRead = fread(&buffer, sizeof(int8_t), 1024, prevFile)) != 0) {
-    // For each byte read:
-    for (int i = 0; i < numRead; i++) {
-      // Append the encoding:
-      std::string currEncoding = map->at(buffer[i]);
-      encodings += currEncoding;
+  int currChar = 0;
+  string encodingBuffer("");
+  while (oldFile.good()) {
+    currChar = oldFile.get();
+    if (currChar == -1) {
+      break;
     }
-    int lastByteLen = encodings.size() % 8;
-    // Save the excess for the next read round.
-    std::string prevExcess(encodings.substr(encodings.size() - lastByteLen));
-    encodings = encodings.substr(0, encodings.size() - lastByteLen);
-
-    // Convert string encoding to bytes
-    std::cout << encodings << std::endl;                                    // TESTING PRINTING
-    WriteBitStringToFile(encodings, zipFile);
-    encodings = prevExcess;
-  }
-  // Print excess and EOF sequence.
-  encodings = encodings + map->at(arrSize - 2);
-  WriteBitStringToFile(encodings, zipFile);
-
-
-  delete[] prevFileName;
-  delete[] zipFileName;
-  fclose(prevFile);
-  fclose(zipFile);
+    string currCharEncoded(""); 
+    try {
+      currCharEncoded = map->at(currChar);
+    } catch (const std::out_of_range &e) {
+      std::cerr << "Error: Can't find encoding." << std::endl;
+      return -1;
+    }
+    encodingBuffer += currCharEncoded;
+    if (encodingBuffer.size() > WRITE_BUFFER_SIZE * 8) {
+      // Filled the buffer, write to file.
+      // Trim down to a multiple of 8 for bytelength.
+      int excessCount = encodingBuffer.size() % 8;
+      string excess = encodingBuffer.substr(encodingBuffer.size() - excessCount);
+      encodingBuffer = 
+                  encodingBuffer.substr(0, encodingBuffer.size() - excessCount);
+      WriteBitStringToFile(encodingBuffer, zipFile);
+      // Save excess.
+      encodingBuffer = excess;
+    }
+  }  // Whole file read and encoded.  Any excess needs writen to the file.
+  string eofCode = map->at(eofVal);
+  encodingBuffer += eofCode;
+  WriteBitStringToFile(encodingBuffer, zipFile);
   return 1;
 }
 
-static void WriteBitStringToFile(std::string bitString, FILE *file) {
-  int8_t buffer[READ_BUFFER_SIZE];
+static bool WriteBitStringToFile(std::string bitString, std::ofstream &outfile) {
+  // Pad the bitString out to multiple of 8 so we can write full bytes.
+  int bitStringOverhang = bitString.size() % 8;
+  for (int i = 0; i < 8 - bitStringOverhang; i++) {
+    bitString += "0";
+  }
+
+  char *buffer = new char[(bitString.size() / 8) + 1];
   // Convert the string encoding to bits to then be able to write.
   std::basic_stringstream<char> encodingStream(bitString);
   std::bitset<8> singleByte;
+
   uint count = 0;
-  while(encodingStream >> singleByte) {
+  while (encodingStream >> singleByte) {
+    // There is some error with the stream at this point.
+    if (!encodingStream.good()) {
+      return false;
+    }
     buffer[count] = (uint8_t) singleByte.to_ulong();
     count++;
-    if (count >= WRITE_BUFFER_SIZE) {
-      if (fwrite(&buffer, sizeof(int8_t), count, file) != count) {
-        std::cout << "Error occured a." << std::endl;
-      }
-      std::cout << "Error occured a." << std::endl;
-      count = 0;
-    }
   }
-  if (fwrite(&buffer, sizeof(int8_t), count, file) != count) {
-    std::cout << "Error occured a." << std::endl;
-  }
+  outfile.write(buffer, count);
+
+  delete[] buffer;
+  return true;
 }

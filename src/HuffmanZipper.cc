@@ -49,32 +49,30 @@ bool HuffmanZipper::ZipFile(string file_name) {
   counts[eofVal] = 1;   // This value is the EOF 'bytevalue'
   // TODO: Delimiter count MIGHT have an impact on the efficientcy.  
   counts[delimiterVal] = 300;  // This is the value used as a delimiter 
-  // Create the tree
+  // Create the trees
   HuffmanTree tree(counts, arrSize);
   // Make translation lookup-table from tree
   std::unordered_map<int, string> *encodingMap = tree.getEncodings();
-  // Encode the lookup-table into the file  Write it as a header?
-  // for (auto it = encodingMap->begin(); it != encodingMap->end(); it++) {
-  //   std::cout << (char) it->first << " " << it->second << std::endl;
-  // }
 
-  
+  std::streampos currOffset = 0;  // Should be the total size of the header.
+  // TODO: Check if this file opens correctly (error handle etc.)
   std::ofstream zipFile(file_name + zipFileEnding, std::ios_base::binary);
+  // Write the encoding map to the zipfile.
+  // TODO: Implement writing the encoding map.
+  // currOffset += WriteZipFileEncodings(, zipFile, );
+  // Write the body of the zipfile.
+  WriteZipFileBody(zipFile, currOffset, file_name, encodingMap);
   // TODO: Implememnt writing of the header.
   // WriteZipFileHeader(, zipFile, );
-  // TODO: Implement writing the encoding map.
-  // WriteZipFileEncodings(, zipFile, );
-  // TODO: Check if this file opens correctly (error handle etc.)
-  WriteZipFileBody(file_name, zipFile, encodingMap);
 
   delete[] counts;
   delete encodingMap;
-  std::cout << "Zip Successful." << std::endl;
   return true;
 }
 
 bool HuffmanZipper::UnzipFile(string file_name) {
   std::cout << "Unzipping " << file_name << std::endl;
+  // TODO Implement
   // Open file.
   // Check header and file integrity.
   // Parse translation lookup-table from header into memory
@@ -82,17 +80,28 @@ bool HuffmanZipper::UnzipFile(string file_name) {
   return false;
 }
 
-int HuffmanZipper::WriteZipFileBody(string origFileName, 
-                     std::ofstream &zipFile, 
-                     std::unordered_map<int, string> *map) {
-  // Get the file names for both original and new file.
+int HuffmanZipper::WriteZipFileHeader(std::ofstream &zipFile,
+                                      std::streampos encodingsOffset, 
+                                      std::streampos bodyOffset) {
+  // TODO Implement
+  return 0;
+}
 
-  // Open the files for reading and writing.
+int HuffmanZipper::WriteZipFileEncodings(std::ofstream &zipFile,
+                                         std::streampos offset, 
+                                         std::unordered_map<int, string> *map) {
+  // TODO Implement
+  return 0;
+}
 
+int HuffmanZipper::WriteZipFileBody(std::ofstream &zipFile, 
+                                    std::streampos offset,
+                                    string origFileName, 
+                                    std::unordered_map<int, string> *map) {
   // TODO Check if this file opens correctly.
+  // Open the file to write to.
   std::ifstream oldFile(origFileName, std::ios_base::binary);
-  
-  zipFile.seekp(ZIP_HEADER_LENGTH);
+  zipFile.seekp(offset);
 
   // Read through the whole file.
   int currChar = 0;
@@ -128,7 +137,7 @@ int HuffmanZipper::WriteZipFileBody(string origFileName,
   return 1;
 }
 
-bool HuffmanZipper::WriteBitStringToFile(std::string bitString, 
+int HuffmanZipper::WriteBitStringToFile(std::string bitString, 
                                          std::ofstream &outfile) {
   // Pad the bitString out to multiple of 8 so we can write full bytes.
   int bitStringOverhang = bitString.size() % 8;
@@ -145,7 +154,7 @@ bool HuffmanZipper::WriteBitStringToFile(std::string bitString,
   while (encodingStream >> singleByte) {
     // There is some error with the stream at this point.
     if (!encodingStream.good()) {
-      return false;
+      return -1;
     }
     buffer[count] = (uint8_t) singleByte.to_ulong();
     count++;
@@ -153,5 +162,10 @@ bool HuffmanZipper::WriteBitStringToFile(std::string bitString,
   outfile.write(buffer, count);
 
   delete[] buffer;
-  return true;
+  return count;
+}
+
+std::string HuffmanZipper::ZipperHeader::ToBitString() {
+  // TODO: Implement
+  return "";
 }

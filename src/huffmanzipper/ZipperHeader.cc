@@ -18,7 +18,10 @@ std::string ZipperHeader::ToBitString() {
 }
 
 void ZipperHeader::ToHostFormat() {
-
+  magicCode_ = ntohl(magicCode_);
+  checkSum_ = ntohl(checkSum_);
+  encodingsOffset_ = ntohll(encodingsOffset_);
+  bodyOffset_ = ntohll(bodyOffset_);
 }
 
 void ZipperHeader::ToDiskFormat() {

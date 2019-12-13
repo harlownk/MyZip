@@ -3,6 +3,8 @@
 #include "ByteInventory.h"
 #include <string>
 
+namespace huffmanzipper {
+
 ByteInventory::ByteInventory() {
   byteCounts_ = new int[BI_NUM_ITEMS];
   size_ = BI_NUM_ITEMS;
@@ -74,3 +76,5 @@ ByteInventory operator+(const ByteInventory &first,
   result += second;
   return result;
 }
+
+}  // namespace huffmanzipper

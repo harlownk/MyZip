@@ -6,6 +6,8 @@
 #include <string>
 #include <unordered_map>
 
+namespace huffmanzipper {
+
 class HuffmanTree {
  public:
   // Constructor that takes the array of the counts of bytes from a file
@@ -41,5 +43,7 @@ class HuffmanTree {
                          std::unordered_map<int, std::string> *map, 
                          std::string currEncoding);
 };
+
+}  // namespace huffmanzipper
 
 #endif  // SRC_HUFFMANTREE_H_

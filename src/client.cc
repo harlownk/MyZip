@@ -9,11 +9,10 @@
 #include <fstream>
 
 #include "client.h"
-#include "HuffmanZipper.h"
-#include "ByteInventory.h"
-#include "HuffmanTree.h"
+#include "huffmanzipper/HuffmanZipper.h"
 
 using std::string;
+using huffmanzipper::HuffmanZipper;
 
 int main(int argc, char** argv) {
   // Do Preliminary checks.

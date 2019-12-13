@@ -7,12 +7,16 @@
 #include <sstream>
 #include <climits>
 #include <fstream>
+#include <boost/crc.hpp>      // for boost::crc_basic, boost::crc_optimal
 
 #include "HuffmanZipper.h"
+#include "ZipperHeader.h"
 #include "ByteInventory.h"
 #include "HuffmanTree.h"
 
 using std::string;
+
+namespace huffmanzipper {
 
 static const int arrSize = BI_NUM_ITEMS + 2;
 static const int delimiterVal = arrSize - 1;
@@ -21,14 +25,13 @@ static const int eofVal = arrSize - 2;
 static const int32_t magicWord = 0xc0defade;
 static const string zipFileEnding = ".mzip";
 
-
 bool HuffmanZipper::ZipFile(string file_name) {
-  // Open file.
+  // Open file that will be zipped.
   std::ifstream currfile;
   currfile.open(file_name, std::ios::in | std::ios::binary);
-  if (!currfile.is_open()) {
+  if (!currfile.is_open()) {  // Make sure the file actually openned.
     std::cerr << "Error encountered while opening " << file_name << std::endl;
-    exit(EXIT_FAILURE);
+    return false;
   }
   // Make a byte inventory of the file.
   // Read everything, counting each byte as we go in this ByteInventory.
@@ -54,9 +57,16 @@ bool HuffmanZipper::ZipFile(string file_name) {
   // Make translation lookup-table from tree
   std::unordered_map<int, string> *encodingMap = tree.getEncodings();
 
-  std::streampos currOffset = 0;  // Should be the total size of the header.
-  // TODO: Check if this file opens correctly (error handle etc.)
-  std::ofstream zipFile(file_name + zipFileEnding, std::ios_base::binary);
+  std::fstream zipFile(file_name + zipFileEnding,  
+                       std::ios::in | std::ios::out | std::ios_base::binary);
+  if (!zipFile.is_open()) {  // Make sure the zip file opens w/o error.
+    std::cerr << "Error encountered while creating " << 
+                  file_name + zipFileEnding << std::endl;
+    return false;
+  }
+  
+  // Write everything after the header first
+  std::streampos currOffset = kHeaderLength; 
   // Write the encoding map to the zipfile.
   // TODO: Implement writing the encoding map.
   // currOffset += WriteZipFileEncodings(, zipFile, );
@@ -80,21 +90,33 @@ bool HuffmanZipper::UnzipFile(string file_name) {
   return false;
 }
 
-int HuffmanZipper::WriteZipFileHeader(std::ofstream &zipFile,
+int HuffmanZipper::WriteZipFileHeader(std::fstream &zipFile,
+                                      int32_t checkSum,
                                       std::streampos encodingsOffset, 
                                       std::streampos bodyOffset) {
-  // TODO Implement
-  return 0;
+  // Build the header.
+  ZipperHeader header;
+  header.magicCode_ = magicWord;
+  header.checkSum_ = checkSum;
+  header.encodingsOffset_ = encodingsOffset;
+  header.bodyOffset_ = bodyOffset;
+  // Convert to proper format.
+  header.ToDiskFormat();
+
+  // Convert to string and print to the file at proper location:
+  zipFile.seekp(0);  // Write at head of file.
+  std::string headerBitString = header.ToBitString();
+  return WriteBitStringToFile(headerBitString, zipFile);
 }
 
-int HuffmanZipper::WriteZipFileEncodings(std::ofstream &zipFile,
+int HuffmanZipper::WriteZipFileEncodings(std::fstream &zipFile,
                                          std::streampos offset, 
                                          std::unordered_map<int, string> *map) {
   // TODO Implement
   return 0;
 }
 
-int HuffmanZipper::WriteZipFileBody(std::ofstream &zipFile, 
+int HuffmanZipper::WriteZipFileBody(std::fstream &zipFile, 
                                     std::streampos offset,
                                     string origFileName, 
                                     std::unordered_map<int, string> *map) {
@@ -138,7 +160,7 @@ int HuffmanZipper::WriteZipFileBody(std::ofstream &zipFile,
 }
 
 int HuffmanZipper::WriteBitStringToFile(std::string bitString, 
-                                         std::ofstream &outfile) {
+                                         std::fstream &outfile) {
   // Pad the bitString out to multiple of 8 so we can write full bytes.
   int bitStringOverhang = bitString.size() % 8;
   for (int i = 0; i < 8 - bitStringOverhang; i++) {
@@ -165,7 +187,4 @@ int HuffmanZipper::WriteBitStringToFile(std::string bitString,
   return count;
 }
 
-std::string HuffmanZipper::ZipperHeader::ToBitString() {
-  // TODO: Implement
-  return "";
-}
+}  // namespace huffmanzipper

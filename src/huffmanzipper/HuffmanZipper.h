@@ -9,25 +9,29 @@
 #include <string>
 #include <unordered_map>
 
-using std::string;
+#include "ZipperHeader.h"
+
+namespace huffmanzipper {
 
 class HuffmanZipper {
  public:
   HuffmanZipper() { }
   ~HuffmanZipper() { }
-  bool ZipFile(string file_name);
-  bool UnzipFile(string file_name);
+  bool ZipFile(std::string file_name);
+  bool UnzipFile(std::string file_name);
+  
  private:
-  int WriteZipFileHeader(std::ofstream &zipFile,
+  int WriteZipFileHeader(std::fstream &zipFile,
+                         int32_t checkSum,
                          std::streampos encodingsOffset, 
                          std::streampos bodyOffset);
-  int WriteZipFileEncodings(std::ofstream &zipFile,
+  int WriteZipFileEncodings(std::fstream &zipFile,
                             std::streampos offset, 
-                            std::unordered_map<int, string> *map);
-  int WriteZipFileBody(std::ofstream &zipFile,
+                            std::unordered_map<int, std::string> *map);
+  int WriteZipFileBody(std::fstream &zipFile,
                        std::streampos offset,
-                       string origFileName,
-                       std::unordered_map<int, string> *map);
+                       std::string origFileName,
+                       std::unordered_map<int, std::string> *map);
 
   // Converts the bitstring to the corresponding bitstream that is then written
   // to the ofstream.  Will only write bitstrings that are of length % 8 == 0.  
@@ -37,29 +41,12 @@ class HuffmanZipper {
   // 
   // Returns -1 if there was an error writing, otherwise returns the number of 
   // bytes written.
-  int WriteBitStringToFile(std::string bitString, std::ofstream &outfile);
-
-  class ZipperHeader {
-   public:
-    ZipperHeader() { }
-    ~ZipperHeader() { }
-
-    // Creates a bit string from the current contents of the Header. The 
-    // bit string's representation of each portion of the contents is in 
-    // network order on disk.
-    std::string ToBitString();
-    void toHostFormat();
-    void toNetworkFormat();
-
-    // Fields:
-    uint32_t magicCode_;
-    uint32_t checkSum_;
-    std::streampos encodingsOffset_;
-    std::streampos bodyOffset_;
-  };  // class ZipperHeader
-
+  int WriteBitStringToFile(std::string bitString, std::fstream &outfile);
   // Fields
   ZipperHeader header_;
+
 };  // class HuffmanZipper
+
+}
 
 #endif  // SRC_HUFFMANZIPPER_H_

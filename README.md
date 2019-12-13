@@ -5,6 +5,7 @@
 - mode is either 'z' to zip, or 'u' to unzip
 
 ## Building
-Places all files produced by the compiler (intermediary or otherwise) into root/build/
+Now creates a bin folder for the executable, and a build folder for build files.
+Requires boost libraries.
 
 ## Installation?

@@ -6,6 +6,8 @@
 #include <string>
 #include <iostream>
 
+// TODO Add all the documentation for the class and the methods etc.
+
 namespace huffmanzipper {
 
 class ZipperHeader {

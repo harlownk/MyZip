@@ -69,11 +69,12 @@ bool HuffmanZipper::ZipFile(string file_name) {
   std::streampos currOffset = kHeaderLength; 
   // Write the encoding map to the zipfile.
   // TODO: Implement writing the encoding map.
-  // currOffset += WriteZipFileEncodings(, zipFile, );
+  currOffset += WriteZipFileEncodings(zipFile, currOffset, encodingMap);
   // Write the body of the zipfile.
   WriteZipFileBody(zipFile, currOffset, file_name, encodingMap);
-  // TODO: Implememnt writing of the header.
-  // WriteZipFileHeader(, zipFile, );
+  // TODO: Need to calculate the checksum to pass to the header to write.
+  int32_t checkSumVal = 0;
+  WriteZipFileHeader(zipFile, checkSumVal, kHeaderLength, currOffset);
 
   delete[] counts;
   delete encodingMap;
@@ -94,6 +95,7 @@ int HuffmanZipper::WriteZipFileHeader(std::fstream &zipFile,
                                       int32_t checkSum,
                                       std::streampos encodingsOffset, 
                                       std::streampos bodyOffset) {
+  // TODO Still needs checked that it works as expected.
   // Build the header.
   ZipperHeader header;
   header.magicCode_ = magicWord;

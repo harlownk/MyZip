@@ -22,7 +22,7 @@ class HuffmanZipper {
   
  private:
   int WriteZipFileHeader(std::fstream &zipFile,
-                         int32_t checkSum,
+                         uint32_t checkSum,
                          std::streampos encodingsOffset, 
                          std::streampos bodyOffset);
   int WriteZipFileEncodings(std::fstream &zipFile,

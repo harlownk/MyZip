@@ -92,7 +92,7 @@ bool HuffmanZipper::UnzipFile(string file_name) {
 }
 
 int HuffmanZipper::WriteZipFileHeader(std::fstream &zipFile,
-                                      int32_t checkSum,
+                                      uint32_t checkSum,
                                       std::streampos encodingsOffset, 
                                       std::streampos bodyOffset) {
   // TODO Still needs checked that it works as expected.
@@ -115,7 +115,11 @@ int HuffmanZipper::WriteZipFileEncodings(std::fstream &zipFile,
                                          std::streampos offset, 
                                          std::unordered_map<int, string> *map) {
   // TODO Implement
-  return 0;
+  std::string bitString("");
+
+
+  zipFile.seekp(offset);  // Move to the right position before writing.
+  return WriteBitStringToFile(bitString, zipFile);
 }
 
 int HuffmanZipper::WriteZipFileBody(std::fstream &zipFile, 

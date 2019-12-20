@@ -7,10 +7,12 @@
 #include <sstream>
 #include <climits>
 #include <fstream>
-#include <boost/crc.hpp>      // for boost::crc_basic, boost::crc_optimal
+#include <cstdint>
+// #include <boost/crc.hpp>      // for boost::crc_basic, boost::crc_optimal
 
 #include "HuffmanZipper.h"
 #include "ZipperHeader.h"
+#include "ZipperEncodings.h"
 #include "ByteInventory.h"
 #include "HuffmanTree.h"
 
@@ -58,7 +60,7 @@ bool HuffmanZipper::ZipFile(string file_name) {
   std::unordered_map<int, string> *encodingMap = tree.getEncodings();
 
   std::fstream zipFile(file_name + zipFileEnding,  
-                       std::ios::in | std::ios::out | std::ios_base::binary);
+                       std::ios::in | std::ios::out | std::ios_base::binary | std::ios_base::trunc);
   if (!zipFile.is_open()) {  // Make sure the zip file opens w/o error.
     std::cerr << "Error encountered while creating " << 
                   file_name + zipFileEnding << std::endl;
@@ -66,15 +68,16 @@ bool HuffmanZipper::ZipFile(string file_name) {
   }
   
   // Write everything after the header first
-  std::streampos currOffset = kHeaderLength; 
+  // std::streampos currOffset = kHeaderLength; 
+  std::streampos currOffset = 24; 
   // Write the encoding map to the zipfile.
   // TODO: Implement writing the encoding map.
   currOffset += WriteZipFileEncodings(zipFile, currOffset, encodingMap);
   // Write the body of the zipfile.
   WriteZipFileBody(zipFile, currOffset, file_name, encodingMap);
   // TODO: Need to calculate the checksum to pass to the header to write.
-  int32_t checkSumVal = 0;
-  WriteZipFileHeader(zipFile, checkSumVal, kHeaderLength, currOffset);
+  int32_t checkSumVal = 0xffffffff;
+  WriteZipFileHeader(zipFile, checkSumVal, 24, currOffset);
 
   delete[] counts;
   delete encodingMap;
@@ -114,9 +117,11 @@ int HuffmanZipper::WriteZipFileHeader(std::fstream &zipFile,
 int HuffmanZipper::WriteZipFileEncodings(std::fstream &zipFile,
                                          std::streampos offset, 
                                          std::unordered_map<int, string> *map) {
-  // TODO Implement
-  std::string bitString("");
-
+  
+  std::string bitString;
+  ZipperEncodings encodings(*map);
+  encodings.ToDiskFormat();
+  bitString = encodings.ToBitString();
 
   zipFile.seekp(offset);  // Move to the right position before writing.
   return WriteBitStringToFile(bitString, zipFile);

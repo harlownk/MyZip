@@ -27,12 +27,10 @@ class ZipperHeader {
   uint32_t checkSum_;
   std::streampos encodingsOffset_;
   std::streampos bodyOffset_;
- private:
-  std::string FieldToBitString(uint32_t field);
-  std::string FieldToBitString(int64_t field);
 };  // class ZipperHeader
 
-const int kHeaderLength = sizeof(ZipperHeader);
+// const int kHeaderLength = sizeof(ZipperHeader);   // TODO Why is this size 42? 
+const int kHeaderLength = 24;
 
 }  // namespace huffmanzipper
 

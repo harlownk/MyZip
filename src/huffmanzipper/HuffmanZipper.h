@@ -13,6 +13,8 @@
 
 namespace huffmanzipper {
 
+// TODO Docs!!!!
+
 class HuffmanZipper {
  public:
   HuffmanZipper() { }

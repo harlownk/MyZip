@@ -7,6 +7,7 @@
 #include <bitset>
 #include <iostream>
 
+// TODO Docs
 namespace huffmanzipper {
 
 #define ntohll(x) \

@@ -68,7 +68,7 @@ bool HuffmanZipper::ZipFile(string file_name) {
   }
   
   // Write everything after the header first
-  // std::streampos currOffset = kHeaderLength; 
+  // std::streampos currOffset = kHeaderLength;   // TODO Figure out why this is broken
   std::streampos currOffset = 24; 
   // Write the encoding map to the zipfile.
   // TODO: Implement writing the encoding map.
@@ -121,6 +121,7 @@ int HuffmanZipper::WriteZipFileEncodings(std::fstream &zipFile,
   std::string bitString;
   ZipperEncodings encodings(*map);
   encodings.ToDiskFormat();
+  
   bitString = encodings.ToBitString();
 
   zipFile.seekp(offset);  // Move to the right position before writing.

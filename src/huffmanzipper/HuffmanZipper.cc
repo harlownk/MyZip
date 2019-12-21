@@ -57,7 +57,8 @@ bool HuffmanZipper::ZipFile(string file_name) {
   std::unordered_map<int, string> *encodingMap = tree.getEncodings();
 
   std::fstream zipFile(file_name + zipFileEnding,  
-                       std::ios::in | std::ios::out | std::ios_base::binary | std::ios_base::trunc);
+                       std::ios::in | std::ios::out | 
+                       std::ios_base::binary | std::ios_base::trunc);
   if (!zipFile.is_open()) {  // Make sure the zip file opens w/o error.
     std::cerr << "Error encountered while creating " << 
                   file_name + zipFileEnding << std::endl;

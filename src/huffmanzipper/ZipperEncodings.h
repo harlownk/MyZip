@@ -25,7 +25,7 @@ namespace huffmanzipper {
 //            |                                   |
 //            |                                   |
 //            |                                   |
-//            |        TODO Documentation                           |
+//            |       // TODO: Documentation                           |
 //            |                                   |
 //            +-----------------------------------+
 //

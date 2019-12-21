@@ -8,7 +8,7 @@
 #include <climits>
 #include <fstream>
 #include <cstdint>
-// #include <boost/crc.hpp>      // for boost::crc_basic, boost::crc_optimal
+#include <boost/crc.hpp>      // for boost::crc_basic, boost::crc_optimal
 
 #include "HuffmanZipper.h"
 #include "ZipperHeader.h"
@@ -73,9 +73,9 @@ bool HuffmanZipper::ZipFile(string file_name) {
   // Write the body of the zipfile.  Encode the actual file using the
   // encodings from the tree.
   WriteZipFileBody(zipFile, currOffset, file_name, encodingMap);
-  // TODO: Need to calculate the checksum to pass to the header to write.
-  int32_t checkSumVal = 0xffffffff;
-  WriteZipFileHeader(zipFile, checkSumVal, 24, currOffset);
+  // Need to calculate the checksum to pass to the header to write.
+  int32_t crcVal = GetCRCOfFile(zipFile, sizeof(ZipperHeader));
+  WriteZipFileHeader(zipFile, crcVal, sizeof(ZipperHeader), currOffset);
 
   // Clean up
   delete[] counts;
@@ -97,7 +97,6 @@ int HuffmanZipper::WriteZipFileHeader(std::fstream &zipFile,
                                       uint32_t checkSum,
                                       std::streampos encodingsOffset, 
                                       std::streampos bodyOffset) {
-  // TODO Still needs checked that it works as expected.
   // Build the header.
   ZipperHeader header;
   header.magicCode_ = magicWord;
@@ -168,6 +167,16 @@ int HuffmanZipper::WriteZipFileBody(std::fstream &zipFile,
   encodingBuffer += eofCode;
   WriteBitStringToFile(encodingBuffer, zipFile);
   return 1;
+}
+
+int32_t GetCRCOfFile(std::fstream &zipFile, std::streampos startOffset) {
+  boost::crc_optimal<32, 0x1021, 0xFFFFFFFF, 0, false, false>  crc_ccitt;
+  zipFile.seekp(startOffset);
+  unsigned char currByte;
+  while (zipFile >> currByte) {
+    crc_ccitt(currByte);
+  }
+  return crc_ccitt.checksum();
 }
 
 int HuffmanZipper::WriteBitStringToFile(std::string bitString, 

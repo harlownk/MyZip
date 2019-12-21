@@ -23,14 +23,11 @@ class ZipperHeader {
   void ToDiskFormat();
 
   // Fields:
+  uint64_t encodingsOffset_;
+  uint64_t bodyOffset_;
   uint32_t magicCode_;
   uint32_t checkSum_;
-  std::streampos encodingsOffset_;
-  std::streampos bodyOffset_;
 };  // class ZipperHeader
-
-// const int kHeaderLength = sizeof(ZipperHeader);   // TODO Why is this size 42? 
-const int kHeaderLength = 24;
 
 }  // namespace huffmanzipper
 

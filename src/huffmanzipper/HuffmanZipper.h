@@ -45,7 +45,7 @@ class HuffmanZipper {
   // bytes written.
   int WriteBitStringToFile(std::string bitString, std::fstream &outfile);
   // Fields
-  ZipperHeader header_;
+  ZipperHeader header_;  // TODO Needed?
 
 };  // class HuffmanZipper
 

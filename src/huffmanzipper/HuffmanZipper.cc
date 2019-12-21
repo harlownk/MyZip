@@ -20,9 +20,8 @@ using std::string;
 
 namespace huffmanzipper {
 
-static const int arrSize = BI_NUM_ITEMS + 2;
-static const int delimiterVal = arrSize - 1;
-static const int eofVal = arrSize - 2;
+static const int arrSize = BI_NUM_ITEMS + 1;
+static const int eofVal = arrSize - 1;
 
 static const int32_t magicWord = 0xc0defade;
 static const string zipFileEnding = ".mzip";
@@ -52,8 +51,6 @@ bool HuffmanZipper::ZipFile(string file_name) {
     counts[i] = bi.getCount(i);
   }
   counts[eofVal] = 1;   // This value is the EOF 'bytevalue'
-  // TODO: Delimiter count MIGHT have an impact on the efficientcy.  
-  counts[delimiterVal] = 300;  // This is the value used as a delimiter 
   // Create the trees
   HuffmanTree tree(counts, arrSize);
   // Make translation lookup-table from tree
@@ -67,18 +64,19 @@ bool HuffmanZipper::ZipFile(string file_name) {
     return false;
   }
   
-  // Write everything after the header first
-  // std::streampos currOffset = kHeaderLength;   // TODO Figure out why this is broken
-  std::streampos currOffset = 24; 
+  // Write everything after the header first. Move cursor to after the header.
+  std::streampos currOffset = sizeof(ZipperHeader);
+
   // Write the encoding map to the zipfile.
-  // TODO: Implement writing the encoding map.
   currOffset += WriteZipFileEncodings(zipFile, currOffset, encodingMap);
-  // Write the body of the zipfile.
+  // Write the body of the zipfile.  Encode the actual file using the
+  // encodings from the tree.
   WriteZipFileBody(zipFile, currOffset, file_name, encodingMap);
   // TODO: Need to calculate the checksum to pass to the header to write.
   int32_t checkSumVal = 0xffffffff;
   WriteZipFileHeader(zipFile, checkSumVal, 24, currOffset);
 
+  // Clean up
   delete[] counts;
   delete encodingMap;
   return true;

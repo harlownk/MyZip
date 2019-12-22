@@ -1,5 +1,11 @@
 // Copyright Nicholas Harlow
 
+#include <bitset>
+#include <cstdint>
+#include <iostream>
+#include <fstream>
+#include <boost/crc.hpp>      // for boost::crc_basic, boost::crc_optimal
+
 #include "Util.h"
 
 namespace huffmanzipper {

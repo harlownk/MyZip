@@ -8,18 +8,19 @@
 #include <climits>
 #include <fstream>
 #include <cstdint>
-#include <boost/crc.hpp>      // for boost::crc_basic, boost::crc_optimal
 
 #include "HuffmanZipper.h"
 #include "ZipperHeader.h"
 #include "ZipperEncodings.h"
 #include "ByteInventory.h"
 #include "HuffmanTree.h"
+#include "Util.h"
 
 using std::string;
 
 namespace huffmanzipper {
 
+// Classwide constants: 
 static const int arrSize = BI_NUM_ITEMS + 1;
 static const int eofVal = arrSize - 1;
 
@@ -62,6 +63,8 @@ bool HuffmanZipper::ZipFile(string file_name) {
   if (!zipFile.is_open()) {  // Make sure the zip file opens w/o error.
     std::cerr << "Error encountered while creating " << 
                   file_name + zipFileEnding << std::endl;
+    delete[] counts;
+    delete encodingMap;
     return false;
   }
   
@@ -72,7 +75,14 @@ bool HuffmanZipper::ZipFile(string file_name) {
   currOffset += WriteZipFileEncodings(zipFile, currOffset, encodingMap);
   // Write the body of the zipfile.  Encode the actual file using the
   // encodings from the tree.
-  WriteZipFileBody(zipFile, currOffset, file_name, encodingMap);
+  int bodyLen = WriteZipFileBody(zipFile, currOffset, file_name, encodingMap);
+  if (bodyLen == -1) {
+    std::cerr << "Error encountered while opening file to zip: " << 
+                 file_name << std::endl;
+    delete[] counts;
+    delete encodingMap;
+    return false;
+  }
   // Need to calculate the checksum to pass to the header to write.
   int32_t crcVal = GetCRCOfFile(zipFile, sizeof(ZipperHeader));
   // int32_t crcVal = 0xaaaaaaaa;
@@ -132,9 +142,11 @@ int HuffmanZipper::WriteZipFileBody(std::fstream &zipFile,
                                     std::streampos offset,
                                     string origFileName, 
                                     std::unordered_map<int, string> *map) {
-  // TODO Check if this file opens correctly.
-  // Open the file to write to.
+  // Open the file to read from that is going to be zipped.
   std::ifstream oldFile(origFileName, std::ios_base::binary);
+  if (!oldFile.is_open()) {  // File couldnt open correctly.
+    return -1;
+  }
   zipFile.seekp(offset);
 
   // Read through the whole file.
@@ -170,7 +182,6 @@ int HuffmanZipper::WriteZipFileBody(std::fstream &zipFile,
   WriteBitStringToFile(encodingBuffer, zipFile);
   return 1;
 }
-
 
 int HuffmanZipper::WriteBitStringToFile(std::string bitString, 
                                          std::fstream &outfile) {

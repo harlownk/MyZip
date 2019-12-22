@@ -11,6 +11,7 @@
 
 #include "ZipperHeader.h"
 
+// TODO Docs
 namespace huffmanzipper {
 
 class HuffmanZipper {
@@ -42,9 +43,6 @@ class HuffmanZipper {
   // Returns -1 if there was an error writing, otherwise returns the number of 
   // bytes written.
   int WriteBitStringToFile(std::string bitString, std::fstream &outfile);
-  // Fields
-  ZipperHeader header_;  // TODO Needed?
-
 };  // class HuffmanZipper
 
 }

@@ -4,6 +4,7 @@
 #define SRC_UTIL_H_
 
 #include <arpa/inet.h>        // For htonl(), etc.
+#include <boost/crc.hpp>      // for boost::crc_basic, boost::crc_optimal
 #include <bitset>
 #include <iostream>
 

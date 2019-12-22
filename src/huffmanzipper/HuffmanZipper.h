@@ -13,9 +13,6 @@
 
 namespace huffmanzipper {
 
-// TODO Docs!!!!
-int32_t GetCRCOfFile(std::fstream &zipFile, std::streampos startOffset);
-
 class HuffmanZipper {
  public:
   HuffmanZipper() { }

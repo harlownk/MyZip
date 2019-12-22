@@ -171,19 +171,6 @@ int HuffmanZipper::WriteZipFileBody(std::fstream &zipFile,
   return 1;
 }
 
-int32_t GetCRCOfFile(std::fstream &zipFile, std::streampos startOffset) {
-  // Create the crc calculator.
-  boost::crc_optimal<32, 0x1021, 0xFFFFFFFF, 0, false, false>  crc_ccitt;
-  // Go to the start of file content.
-  zipFile.seekp(startOffset);
-  char currByte;
-  while (!zipFile.eof()) {
-    zipFile.read(&currByte, 1);
-    crc_ccitt.process_byte(currByte);
-  }
-  zipFile.clear();  // need to clear the error flags that got set 
-  return crc_ccitt.checksum();
-}
 
 int HuffmanZipper::WriteBitStringToFile(std::string bitString, 
                                          std::fstream &outfile) {

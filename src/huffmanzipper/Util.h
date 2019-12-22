@@ -33,6 +33,10 @@ std::string FieldToBitString(uint32_t field);
 // representation of the data type.
 std::string FieldToBitString(uint64_t field);
 
+// Takes the zipFile and calculates the CRC of the file starting at the 
+// byte at startOffset until the end of the file.
+int32_t GetCRCOfFile(std::fstream &zipFile, std::streampos startOffset);
+
 }  // namespace huffmanzipper
 
 #endif  //SRC_UTIL_H_

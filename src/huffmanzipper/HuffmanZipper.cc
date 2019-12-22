@@ -75,6 +75,8 @@ bool HuffmanZipper::ZipFile(string file_name) {
   WriteZipFileBody(zipFile, currOffset, file_name, encodingMap);
   // Need to calculate the checksum to pass to the header to write.
   int32_t crcVal = GetCRCOfFile(zipFile, sizeof(ZipperHeader));
+  // int32_t crcVal = 0xaaaaaaaa;
+  // zipFile.seekp(0);
   WriteZipFileHeader(zipFile, crcVal, sizeof(ZipperHeader), currOffset);
 
   // Clean up
@@ -107,8 +109,8 @@ int HuffmanZipper::WriteZipFileHeader(std::fstream &zipFile,
   header.ToDiskFormat();
 
   // Convert to string and print to the file at proper location:
-  zipFile.seekp(0);  // Write at head of file.
   std::string headerBitString = header.ToBitString();
+  zipFile.seekp(0);  // Write at head of file.
   return WriteBitStringToFile(headerBitString, zipFile);
 }
 
@@ -170,12 +172,16 @@ int HuffmanZipper::WriteZipFileBody(std::fstream &zipFile,
 }
 
 int32_t GetCRCOfFile(std::fstream &zipFile, std::streampos startOffset) {
+  // Create the crc calculator.
   boost::crc_optimal<32, 0x1021, 0xFFFFFFFF, 0, false, false>  crc_ccitt;
+  // Go to the start of file content.
   zipFile.seekp(startOffset);
-  unsigned char currByte;
-  while (zipFile >> currByte) {
-    crc_ccitt(currByte);
+  char currByte;
+  while (!zipFile.eof()) {
+    zipFile.read(&currByte, 1);
+    crc_ccitt.process_byte(currByte);
   }
+  zipFile.clear();  // need to clear the error flags that got set 
   return crc_ccitt.checksum();
 }
 

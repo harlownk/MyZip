@@ -7,6 +7,7 @@
 
 #define BI_NUM_ITEMS 256
 
+namespace huffmanzipper {
 // ByteInventory that contains a count of each byte.
 class ByteInventory {
  public:
@@ -44,5 +45,8 @@ class ByteInventory {
 
 ByteInventory operator+(const ByteInventory &first, 
                         const ByteInventory &second);
+
+
+} // namespace huffmanzipper
 
 #endif  // SRC_BYTEINVENTORY_H_

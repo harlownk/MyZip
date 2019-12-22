@@ -8,7 +8,8 @@
 
 #include "HuffmanTree.h"
 
-// TODO: Finish fixing memory errors from valgrind.
+
+namespace huffmanzipper {
 
 HuffmanTree::HuffmanTree(int *counts, int size) : root_(nullptr) {
   auto cmp = [](HuffmanNode *left, HuffmanNode *right) { return *left < *right; };
@@ -77,3 +78,5 @@ HuffmanTree::HuffmanNode::~HuffmanNode() {
 int HuffmanTree::HuffmanNode::operator<(const HuffmanNode &other) {
   return other.count_ < count_;
 }
+
+}  // namespace huffmanzipper

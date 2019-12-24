@@ -36,6 +36,10 @@ HuffmanTree::HuffmanTree(int *counts, int size) : root_(nullptr) {
   root_ = queue.top();
 }
 
+HuffmanTree::HuffmanTree(std::unordered_map<int, std::string> *map) {
+  // AddCodeToTree(currCode, encoding);
+}
+
 HuffmanTree::~HuffmanTree() {
   delete root_;
 }

@@ -10,9 +10,12 @@ namespace huffmanzipper {
 
 class HuffmanTree {
  public:
+  HuffmanTree() { };  // TODO TEMPORARY UNTIL REAL DEVELOPED
   // Constructor that takes the array of the counts of bytes from a file
   // and makes a tree representing the possible encodings.
   HuffmanTree(int *counts, int size);
+
+  HuffmanTree(std::unordered_map<int, std::string> *map);
   // Destructs the tree.
   ~HuffmanTree(); 
 

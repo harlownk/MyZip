@@ -85,8 +85,6 @@ bool HuffmanZipper::ZipFile(string file_name) {
   }
   // Need to calculate the checksum to pass to the header to write.
   int32_t crcVal = GetCRCOfFile(zipFile, sizeof(ZipperHeader));
-  // int32_t crcVal = 0xaaaaaaaa;
-  // zipFile.seekp(0);
   WriteZipFileHeader(zipFile, crcVal, sizeof(ZipperHeader), currOffset);
 
   // Clean up
@@ -99,9 +97,16 @@ bool HuffmanZipper::UnzipFile(string file_name) {
   std::cout << "Unzipping " << file_name << std::endl;
   // TODO Implement
   // Open file.
+  std::ifstream zippedFile(file_name);
   // Check header and file integrity.
+  ZipperHeader header = ReadZipFileHeader(zippedFile, 0);
   // Parse translation lookup-table from header into memory
+  int encodingsLength = header.bodyOffset_ - header.encodingsOffset_;
+  HuffmanTree encodingTree = ReadZipFileEncodings(zippedFile, 
+                                                  header.encodingsOffset_, 
+                                                  encodingsLength);
   // Read the encoded file translating and writing decoded file.
+  // DecodeZipFileBody();
   return false;
 }
 
@@ -133,9 +138,9 @@ int HuffmanZipper::WriteZipFileEncodings(std::fstream &zipFile,
   encodings.ToDiskFormat();
   
   bitString = encodings.ToBitString();
-
   zipFile.seekp(offset);  // Move to the right position before writing.
-  return WriteBitStringToFile(bitString, zipFile);
+  int count = WriteBitStringToFile(bitString, zipFile);
+  return count;
 }
 
 int HuffmanZipper::WriteZipFileBody(std::fstream &zipFile, 
@@ -187,8 +192,10 @@ int HuffmanZipper::WriteBitStringToFile(std::string bitString,
                                          std::fstream &outfile) {
   // Pad the bitString out to multiple of 8 so we can write full bytes.
   int bitStringOverhang = bitString.size() % 8;
-  for (int i = 0; i < 8 - bitStringOverhang; i++) {
-    bitString += "0";
+  if (bitStringOverhang != 0) {
+    for (int i = 0; i < 8 - bitStringOverhang; i++) {
+      bitString += "0";
+    }
   }
 
   char *buffer = new char[(bitString.size() / 8) + 1];
@@ -209,6 +216,45 @@ int HuffmanZipper::WriteBitStringToFile(std::string bitString,
 
   delete[] buffer;
   return count;
+}
+
+ZipperHeader HuffmanZipper::ReadZipFileHeader(std::ifstream &encodedFile, 
+                                              std::streampos offset) {
+  int bytes = sizeof(ZipperHeader);
+  std::string headerBitString = ReadBitStringFromFile(encodedFile, offset, bytes);
+  ZipperHeader header(headerBitString);
+  header.ToHostFormat();
+  return header;
+}
+
+HuffmanTree HuffmanZipper::ReadZipFileEncodings(std::ifstream &encodedFile,
+                                                std::streampos encodingOffset,
+                                                int encodingsLength) {
+  
+  std::string encodingsBitString = ReadBitStringFromFile(encodedFile, 
+                                                         encodingOffset,
+                                                         encodingsLength);
+  ZipperEncodings allEncodings(encodingsBitString);
+  allEncodings.ToHostFormat();
+  std::unordered_map<int, std::string> *encodingMap = allEncodings.GetEncodingMap();
+  // HuffmanTree decodingTree(ThatUsefulThing);
+  HuffmanTree decodingTree;
+  return decodingTree;
+}
+
+std::string HuffmanZipper::ReadBitStringFromFile(std::ifstream &file, 
+                                                 std::streampos start, 
+                                                 int numBytes) {
+  std::string result("");
+  file.seekg(start);
+  char currChar;
+  int end = ((int) start) + numBytes;
+  for (int i = start; i < end; i++) {
+    currChar = file.get();
+    std::bitset<8> currBits(currChar);
+    result += currBits.to_string();
+  }
+  return result;
 }
 
 }  // namespace huffmanzipper

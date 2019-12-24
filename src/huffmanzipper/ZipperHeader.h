@@ -13,7 +13,9 @@ namespace huffmanzipper {
 class ZipperHeader {
  public:
   ZipperHeader() { }
+  ZipperHeader(std::string bitString);
   ~ZipperHeader() { }
+
 
   // Creates a bit string from the current contents of the Header. The 
   // bit string's representation of each portion of the contents is in 

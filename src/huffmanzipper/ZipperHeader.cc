@@ -9,6 +9,22 @@
 
 namespace huffmanzipper {
 
+ZipperHeader::ZipperHeader(std::string bitString) {
+  // Parse the bitstring and initialize the  header.
+  std::string magicCodeString = bitString.substr(0, sizeof(magicCode_) * 8);
+  bitString = bitString.substr(sizeof(magicCode_) * 8);
+  std::string checkSumString = bitString.substr(0, sizeof(checkSum_) * 8);
+  bitString = bitString.substr(sizeof(checkSum_) * 8);
+  std::string encodingOffsetString = bitString.substr(0, sizeof(encodingsOffset_) * 8);
+  bitString = bitString.substr(sizeof(encodingsOffset_) * 8);
+  std::string bodyOffsetString = bitString.substr(0, sizeof(bodyOffset_) * 8);
+
+  magicCode_ = std::bitset<32>(magicCodeString).to_ulong();
+  checkSum_ = std::bitset<32>(checkSumString).to_ulong();
+  encodingsOffset_ = std::bitset<64>(encodingOffsetString).to_ulong();
+  bodyOffset_ = std::bitset<64>(bodyOffsetString).to_ulong();
+}
+
 std::string ZipperHeader::ToBitString() {
   std::string result("");
   result += FieldToBitString(magicCode_);

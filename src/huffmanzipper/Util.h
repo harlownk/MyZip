@@ -12,13 +12,6 @@ namespace huffmanzipper {
 // Represents Utility functions and macros etc that the Zipper uses
 // across its various classes.
 
-// Macros to change the endianess of 64bit data types.
-// Changes from network order (big endian) to host order (little endian)
-#define ntohll(x) \
-  ( ((uint64_t) (ntohl((uint32_t)((x << 32) >> 32))) << 32) |   \
-    ntohl(((uint32_t)(x >> 32))) )
-#define htonll(x) (ntohll(x))
-
 // Creates a bit-string from a 16bit data type, takes the data type
 // as an argument and returns a string with length 16, that shows the bit
 // representation of the data type.
@@ -43,8 +36,6 @@ uint64_t htonll(uint64_t x);
 
 // Convers the 64bit vale to host order.
 uint64_t ntohll(uint64_t x);
-
-}
 
 }  // namespace huffmanzipper
 

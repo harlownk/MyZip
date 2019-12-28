@@ -38,6 +38,14 @@ std::string FieldToBitString(uint64_t field);
 // byte at startOffset until the end of the file.
 int32_t GetCRCOfFile(std::fstream &zipFile, std::streampos startOffset);
 
+// Converts the 64bit value to network order.
+uint64_t htonll(uint64_t x);
+
+// Convers the 64bit vale to host order.
+uint64_t ntohll(uint64_t x);
+
+}
+
 }  // namespace huffmanzipper
 
 #endif  //SRC_UTIL_H_

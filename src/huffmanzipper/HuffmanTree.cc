@@ -37,7 +37,11 @@ HuffmanTree::HuffmanTree(int *counts, int size) : root_(nullptr) {
 }
 
 HuffmanTree::HuffmanTree(std::unordered_map<int, std::string> *map) {
-  // AddCodeToTree(currCode, encoding);
+  for (auto iter = map->begin(); iter != map->end(); iter++) {
+    int currCode = (*iter).first;
+    std::string encoding = (*iter).second;
+    root_ = AddCodeToTree(root_, encoding, currCode);
+  }
 }
 
 HuffmanTree::~HuffmanTree() {
@@ -61,6 +65,29 @@ void HuffmanTree::traverseEncodings(HuffmanNode *root,
   }
 }
 
+HuffmanTree::HuffmanNode 
+*HuffmanTree::AddCodeToTree(HuffmanTree::HuffmanNode *root, std::string currEncoding, int code) {
+  if (currEncoding.size() == 0) {
+    // We reached the end
+    root = new HuffmanNode(code, 0);
+    return root;
+  } else if (root == NULL) {
+    // We need to add a node to the tree, set the code to an arbitrary
+    // value to denote a non ending node.
+    // Make the count/frequency a nonsense value since it doesnt matter 
+    // for this type of tree.
+    root = new HuffmanNode(-1, 0);
+  }
+
+  if (currEncoding.at(0) == '0') {
+    root->left_ = AddCodeToTree(root->left_, currEncoding.substr(1), code);
+  } else {
+    root->right_ = AddCodeToTree(root->right_, currEncoding.substr(1), code);
+  }
+  return root;
+}
+
+
 // HuffmanNode declarations.
 HuffmanTree::HuffmanNode::HuffmanNode(int code, int count) {
   byteCode_ = code;
@@ -82,5 +109,10 @@ HuffmanTree::HuffmanNode::~HuffmanNode() {
 int HuffmanTree::HuffmanNode::operator<(const HuffmanNode &other) {
   return other.count_ < count_;
 }
+
+// HuffmanTree::HuffmanNode 
+// &HuffmanTree::HuffmanNode::operator=(HuffmanTree::HuffmanNode &rightHandSide) {
+//   *this = rightHandSide;
+// }
 
 }  // namespace huffmanzipper

@@ -28,10 +28,14 @@ class HuffmanTree {
    public:
     // Creates a childless node with the givenn code and count.
     HuffmanNode(int code, int count);
+    // Copy constructor.
+    HuffmanNode(HuffmanNode &rightHandSide) = delete;
     // Cleans up the children of the node.
     ~HuffmanNode();
     // Implements lessthan comparison.
     int operator<(const HuffmanNode &other);
+    // Assignment operator.
+    // HuffmanNode &operator=(HuffmanNode &rightHandSide);
 
     // Fields:
     int byteCode_;
@@ -45,6 +49,7 @@ class HuffmanTree {
   void traverseEncodings(HuffmanNode *root, 
                          std::unordered_map<int, std::string> *map, 
                          std::string currEncoding);
+  HuffmanNode *AddCodeToTree(HuffmanNode *root, std::string currEncoding, int code);
 };
 
 }  // namespace huffmanzipper

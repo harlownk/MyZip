@@ -98,8 +98,14 @@ bool HuffmanZipper::UnzipFile(string file_name) {
   // TODO Implement
   // Open file.
   std::ifstream zippedFile(file_name);
-  // Check header and file integrity.
+  // Get the header of the zip file.
   ZipperHeader header = ReadZipFileHeader(zippedFile, 0);
+  // Check header and file integrity.  header returned in host format.
+  // TODO Check magicword, and crc of the file, make sure they are correct.
+  // if (header.magicCode_ != magicWord) {
+  //   return false;
+  // }
+  // int32_t fileCRC = CRCGetCRCOfFile();
   // Parse translation lookup-table from header into memory
   int encodingsLength = header.bodyOffset_ - header.encodingsOffset_;
   HuffmanTree encodingTree = ReadZipFileEncodings(zippedFile, 
@@ -230,15 +236,28 @@ ZipperHeader HuffmanZipper::ReadZipFileHeader(std::ifstream &encodedFile,
 HuffmanTree HuffmanZipper::ReadZipFileEncodings(std::ifstream &encodedFile,
                                                 std::streampos encodingOffset,
                                                 int encodingsLength) {
-  
+  // Create a ZipperEncodings that we can read and parse.
   std::string encodingsBitString = ReadBitStringFromFile(encodedFile, 
                                                          encodingOffset,
                                                          encodingsLength);
   ZipperEncodings allEncodings(encodingsBitString);
   allEncodings.ToHostFormat();
+  // Get the map from the encodings.
   std::unordered_map<int, std::string> *encodingMap = allEncodings.GetEncodingMap();
-  // HuffmanTree decodingTree(ThatUsefulThing);
-  HuffmanTree decodingTree;
+  // Make a tree out of the encodings.
+  HuffmanTree decodingTree(encodingMap);
+  std::unordered_map<int, std::string> *testMap = decodingTree.getEncodings();
+  for (auto iter = encodingMap->begin(); iter != encodingMap->end(); iter++) {
+    int key = (*iter).first;
+    std::string value = (*iter).second;
+    // std::cout << key << ", " << value << std::endl;
+    // std::string value = testMap->at(key);
+    // if ((value.compare((*iter).second)) != 0) {
+    //   std::cout
+    // }
+  }
+
+  delete encodingMap;
   return decodingTree;
 }
 

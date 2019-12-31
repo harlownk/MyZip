@@ -55,10 +55,14 @@ ZipperEncodings::ZipperEncodings(const std::string paramBitString) {
     // Get the bitLengthBits bits from the bit string.
     std::string bitLengthBitString = bitString.substr(0, sizeof(currInfo.encodingSizeBits_) * 8);
     bitLengthBitString = bitString.substr(sizeof(currInfo.encodingSizeBits_) * 8);
-    currInfo.encodingSizeBits_ = std::bitset<32>(codeBitString).to_ulong();
+    currInfo.encodingSizeBits_ = std::bitset<16>(codeBitString).to_ulong();
 
     // Convert to Host format, then use the size to trim the encoding stream.
     currInfo.ToHostFormat();
+    
+    std::cout << currInfo.code_ << std::endl;
+    std::cout << currInfo.encodingSizeBits_ << std::endl;
+
     int excessSizeBits;
     int readSize;
     if ((excessSizeBits = 8 - (currInfo.encodingSizeBits_ % 8)) != 8) {

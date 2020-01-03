@@ -21,11 +21,15 @@ namespace huffmanzipper {
 //
 //                EncodingInfo structs 
 //            +-----------------------------------+
-//            |                                   | 
-//            |                                   |
-//            |                                   |
-//            |                                   |
-//            |       // TODO: Documentation                           |
+//            |   char/int code  ascii            | 
+//            |      4 bytes                      |
+//            +-----------------------------------+
+//            |   encoding size in bits           |
+//            |      2 bytes                      |
+//            +-----------------------------------+
+//            |   full encoding                   |
+//            |     bit-length equal to size      |
+//            |        field. Variable length     |
 //            |                                   |
 //            +-----------------------------------+
 //

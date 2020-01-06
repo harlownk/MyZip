@@ -103,16 +103,14 @@ std::string ZipperEncodings::ToBitString() {
 void ZipperEncodings::ToHostFormat() {
   size_ = ntohl(size_);
   for (auto iter = allEncodingInfo_.begin(); iter != allEncodingInfo_.end(); iter++) {
-    EncodingInfo currInfo = *iter;
-    currInfo.ToHostFormat();
+    (*iter).ToHostFormat();
   }
 }
 
 void ZipperEncodings::ToDiskFormat() {
   size_ = htonl(size_);
   for (auto iter = allEncodingInfo_.begin(); iter != allEncodingInfo_.end(); iter++) {
-    EncodingInfo currInfo = *iter;
-    currInfo.ToDiskFormat();
+    (*iter).ToDiskFormat();
   }
 }
 
@@ -132,8 +130,8 @@ void ZipperEncodings::EncodingInfo::ToHostFormat() {
 }
 
 void ZipperEncodings::EncodingInfo::ToDiskFormat() {
-  code_ = htonl(code_);
-  encodingSizeBits_ = htons(encodingSizeBits_);
+  code_ = ntohl(code_);
+  encodingSizeBits_ = ntohs(encodingSizeBits_);
 }
 
 

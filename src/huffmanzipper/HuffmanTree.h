@@ -10,7 +10,7 @@ namespace huffmanzipper {
 
 class HuffmanTree {
  public:
-  HuffmanTree() { };  // TODO TEMPORARY UNTIL REAL DEVELOPED
+  HuffmanTree() : root_(nullptr) { };  // TODO TEMPORARY UNTIL REAL DEVELOPED
   // Constructor that takes the array of the counts of bytes from a file
   // and makes a tree representing the possible encodings.
   HuffmanTree(int *counts, int size);

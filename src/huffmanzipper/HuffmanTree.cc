@@ -36,7 +36,7 @@ HuffmanTree::HuffmanTree(int *counts, int size) : root_(nullptr) {
   root_ = queue.top();
 }
 
-HuffmanTree::HuffmanTree(std::unordered_map<int, std::string> *map) {
+HuffmanTree::HuffmanTree(std::unordered_map<int, std::string> *map) : root_(nullptr) {
   for (auto iter = map->begin(); iter != map->end(); iter++) {
     int currCode = (*iter).first;
     std::string encoding = (*iter).second;
@@ -45,8 +45,11 @@ HuffmanTree::HuffmanTree(std::unordered_map<int, std::string> *map) {
 }
 
 HuffmanTree::~HuffmanTree() {
-  delete root_;
+  if (root_) {
+    delete root_;
+  }
 }
+
 
 std::unordered_map<int, std::string> *HuffmanTree::getEncodings() {
   auto *encodingMap = new std::unordered_map<int, std::string>;

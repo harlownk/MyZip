@@ -54,14 +54,12 @@ ZipperEncodings::ZipperEncodings(const std::string paramBitString) {
     currInfo.code_ = std::bitset<32>(codeBitString).to_ulong();
     // Get the bitLengthBits bits from the bit string.
     std::string bitLengthBitString = bitString.substr(0, sizeof(currInfo.encodingSizeBits_) * 8);
-    bitLengthBitString = bitString.substr(sizeof(currInfo.encodingSizeBits_) * 8);
-    currInfo.encodingSizeBits_ = std::bitset<16>(codeBitString).to_ulong();
+    bitString = bitString.substr(sizeof(currInfo.encodingSizeBits_) * 8);
+    currInfo.encodingSizeBits_ = std::bitset<16>(bitLengthBitString).to_ulong();
 
     // Convert to Host format, then use the size to trim the encoding stream.
     currInfo.ToHostFormat();
     
-    std::cout << currInfo.code_ << std::endl;
-    std::cout << currInfo.encodingSizeBits_ << std::endl;
 
     int excessSizeBits;
     int readSize;
@@ -71,18 +69,19 @@ ZipperEncodings::ZipperEncodings(const std::string paramBitString) {
       readSize = currInfo.encodingSizeBits_;
     }
     currInfo.encoding_ = bitString.substr(0, readSize);
+    bitString = bitString.substr(readSize);
     int excess = readSize - currInfo.encodingSizeBits_;
     currInfo.encoding_ = currInfo.encoding_.substr(excess);
     currInfo.ToDiskFormat();
 
     // Add to list.
-    allEncodingInfo_.push_back(currInfo);
+    allEncodingInfo_.push_back(currInfo);    
   }
 }
 
 // Passes ownership of the map to the caller.
 std::unordered_map<int, std::string> *ZipperEncodings::GetEncodingMap() {
-  std::unordered_map<int, std::string> *result = new std::unordered_map<int, std::string>;
+  auto *result = new std::unordered_map<int, std::string>;
   for (auto iter = allEncodingInfo_.begin(); iter != allEncodingInfo_.end(); iter++) {
     EncodingInfo currEncoding = *iter;
     result->insert({currEncoding.code_, currEncoding.encoding_});

@@ -245,17 +245,18 @@ HuffmanTree HuffmanZipper::ReadZipFileEncodings(std::ifstream &encodedFile,
   // Get the map from the encodings.
   std::unordered_map<int, std::string> *encodingMap = allEncodings.GetEncodingMap();
   // Make a tree out of the encodings.
-  HuffmanTree decodingTree(encodingMap);
-  std::unordered_map<int, std::string> *testMap = decodingTree.getEncodings();
   for (auto iter = encodingMap->begin(); iter != encodingMap->end(); iter++) {
     int key = (*iter).first;
     std::string value = (*iter).second;
-    // std::cout << key << ", " << value << std::endl;
+    std::cout << key << ", " << value << std::endl;
     // std::string value = testMap->at(key);
     // if ((value.compare((*iter).second)) != 0) {
     //   std::cout
     // }
   }
+  HuffmanTree decodingTree(encodingMap);
+  // HuffmanTree decodingTree;
+  // std::unordered_map<int, std::string> *testMap = decodingTree.getEncodings();
 
   delete encodingMap;
   return decodingTree;

@@ -38,9 +38,10 @@ class HuffmanZipper {
   ZipperHeader ReadZipFileHeader(std::ifstream &encodedFile, 
                                  std::streampos offset);
 
-  HuffmanTree ReadZipFileEncodings(std::ifstream &encodedFile,
-                                   std::streampos encodingOffset,
-                                   int encodingsLength);
+  // Returns a HuffmanTree
+  HuffmanTree *ReadZipFileEncodings(std::ifstream &encodedFile,
+                                    std::streampos encodingOffset,
+                                    int encodingsLength);
 
 
   // Converts the bitstring to the corresponding bitstream that is then written

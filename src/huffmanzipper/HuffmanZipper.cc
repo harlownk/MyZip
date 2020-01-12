@@ -108,11 +108,13 @@ bool HuffmanZipper::UnzipFile(string file_name) {
   // int32_t fileCRC = CRCGetCRCOfFile();
   // Parse translation lookup-table from header into memory
   int encodingsLength = header.bodyOffset_ - header.encodingsOffset_;
-  HuffmanTree encodingTree = ReadZipFileEncodings(zippedFile, 
+  HuffmanTree *encodingTree = ReadZipFileEncodings(zippedFile, 
                                                   header.encodingsOffset_, 
                                                   encodingsLength);
   // Read the encoded file translating and writing decoded file.
-  // DecodeZipFileBody();
+  // DecodeZipFileBody(zippedFile, header.bodyOffset_, encodingTree);
+
+  delete encodingTree;
   return false;
 }
 
@@ -233,9 +235,9 @@ ZipperHeader HuffmanZipper::ReadZipFileHeader(std::ifstream &encodedFile,
   return header;
 }
 
-HuffmanTree HuffmanZipper::ReadZipFileEncodings(std::ifstream &encodedFile,
-                                                std::streampos encodingOffset,
-                                                int encodingsLength) {
+HuffmanTree *HuffmanZipper::ReadZipFileEncodings(std::ifstream &encodedFile,
+                                                 std::streampos encodingOffset,
+                                                 int encodingsLength) {
   // Create a ZipperEncodings that we can read and parse.
   std::string encodingsBitString = ReadBitStringFromFile(encodedFile, 
                                                          encodingOffset,
@@ -245,18 +247,7 @@ HuffmanTree HuffmanZipper::ReadZipFileEncodings(std::ifstream &encodedFile,
   // Get the map from the encodings.
   std::unordered_map<int, std::string> *encodingMap = allEncodings.GetEncodingMap();
   // Make a tree out of the encodings.
-  for (auto iter = encodingMap->begin(); iter != encodingMap->end(); iter++) {
-    int key = (*iter).first;
-    std::string value = (*iter).second;
-    std::cout << key << ", " << value << std::endl;
-    // std::string value = testMap->at(key);
-    // if ((value.compare((*iter).second)) != 0) {
-    //   std::cout
-    // }
-  }
-  HuffmanTree decodingTree(encodingMap);
-  // HuffmanTree decodingTree;
-  // std::unordered_map<int, std::string> *testMap = decodingTree.getEncodings();
+  HuffmanTree *decodingTree = new HuffmanTree(encodingMap);
 
   delete encodingMap;
   return decodingTree;

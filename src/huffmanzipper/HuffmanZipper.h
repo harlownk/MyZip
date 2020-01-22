@@ -38,10 +38,19 @@ class HuffmanZipper {
   ZipperHeader ReadZipFileHeader(std::ifstream &encodedFile, 
                                  std::streampos offset);
 
-  // Returns a HuffmanTree
+  // Returns a HuffmanTree pointer, passing responsibility of the allocated 
+  // memory to the caller.
   HuffmanTree *ReadZipFileEncodings(std::ifstream &encodedFile,
                                     std::streampos encodingOffset,
                                     int encodingsLength);
+
+  // Reads from the encoded/zipped file starting at the given offset, decodes 
+  // the file byte-by-byte using the given HuffmanTree, and then writing 
+  // the output through the file provided.
+  void DecodeZipFileBody(std::ifstream &zippedFile, 
+                         std::ofstream &outFile, 
+                         std::streampos bodyOffset, 
+                         HuffmanTree *decodingTree);
 
 
   // Converts the bitstring to the corresponding bitstream that is then written

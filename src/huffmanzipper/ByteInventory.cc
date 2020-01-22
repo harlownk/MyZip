@@ -2,6 +2,7 @@
 
 #include "ByteInventory.h"
 #include <string>
+#include <cstdint>
 
 namespace huffmanzipper {
 
@@ -25,7 +26,7 @@ ByteInventory::~ByteInventory() {
   delete[] byteCounts_;
 }
 
-void ByteInventory::addByte(int byte, int count) {
+void ByteInventory::addByte(uint16_t byte, int count) {
   if (byte > size_) {
     return;
   }

@@ -1,5 +1,9 @@
 // Copyright Nicholas Harlow
 
+// TODO STREAMS DONT WORK FOR READING WRITING BINARY DATA. NEED TO CREATE OWN
+// READ WRITE.  THIS MEANS I CAN ALSO REWRITE NOT USING BITSTRINGS, CREATE BITREAD/WRITE
+// NEED TO USE C STYLE IO, THEN USE C++ CLASS WRAPPERS.
+
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
@@ -8,6 +12,7 @@
 #include <climits>
 #include <fstream>
 #include <cstdint>
+#include <vector>
 
 #include "HuffmanZipper.h"
 #include "ZipperHeader.h"
@@ -41,9 +46,9 @@ bool HuffmanZipper::ZipFile(string file_name) {
   currfile >> std::noskipws;
   char currval;
   while (currfile >> currval) {
-    bi.addByte(currval);
+    bi.addByte((unsigned char)currval);
   }
-  currfile.close();
+  // currfile.close();
 
   // Make an encoding tree:
   // Convert BI into an array.
@@ -95,7 +100,6 @@ bool HuffmanZipper::ZipFile(string file_name) {
 
 bool HuffmanZipper::UnzipFile(string file_name) {
   std::cout << "Unzipping " << file_name << std::endl;
-  // TODO Implement
   // Open file.
   std::ifstream zippedFile(file_name);
   // Get the header of the zip file.
@@ -112,7 +116,9 @@ bool HuffmanZipper::UnzipFile(string file_name) {
                                                   header.encodingsOffset_, 
                                                   encodingsLength);
   // Read the encoded file translating and writing decoded file.
-  // DecodeZipFileBody(zippedFile, header.bodyOffset_, encodingTree);
+  std::string newFileName(file_name.substr(0, file_name.size() - zipFileEnding.size() + 1));
+  std::ofstream decodedWriteFile(newFileName, std::ifstream::binary);
+  DecodeZipFileBody(zippedFile, decodedWriteFile, header.bodyOffset_, encodingTree);
 
   delete encodingTree;
   return false;
@@ -155,6 +161,7 @@ int HuffmanZipper::WriteZipFileBody(std::fstream &zipFile,
                                     std::streampos offset,
                                     string origFileName, 
                                     std::unordered_map<int, string> *map) {
+  auto &mapRef = *map;
   // Open the file to read from that is going to be zipped.
   std::ifstream oldFile(origFileName, std::ios_base::binary);
   if (!oldFile.is_open()) {  // File couldnt open correctly.
@@ -163,20 +170,20 @@ int HuffmanZipper::WriteZipFileBody(std::fstream &zipFile,
   zipFile.seekp(offset);
 
   // Read through the whole file.
-  int currChar = 0;
+  char currChar = 0;
   string encodingBuffer("");
   while (oldFile.good()) {
-    currChar = oldFile.get();
+    oldFile.read(&currChar, 1);
     if (currChar == -1) {
       break;
     }
     string currCharEncoded(""); 
-    try {
-      currCharEncoded = map->at(currChar);
-    } catch (const std::out_of_range &e) {
-      std::cerr << "Error: Can't find encoding." << std::endl;
-      return -1;
-    }
+    // try {
+      currCharEncoded = mapRef[currChar];
+    // } catch (const std::out_of_range &e) {
+    //   std::cerr << "Error: Can't find encoding. " << e << std::endl;
+    //   return -1;
+    // }
     encodingBuffer += currCharEncoded;
     if (encodingBuffer.size() > WRITE_BUFFER_SIZE * 8) {
       // Filled the buffer, write to file.
@@ -190,7 +197,7 @@ int HuffmanZipper::WriteZipFileBody(std::fstream &zipFile,
       encodingBuffer = excess;
     }
   }  // Whole file read and encoded.  Any excess needs writen to the file.
-  string eofCode = map->at(eofVal);
+  string eofCode = mapRef[currChar];
   encodingBuffer += eofCode;
   WriteBitStringToFile(encodingBuffer, zipFile);
   return 1;
@@ -251,6 +258,31 @@ HuffmanTree *HuffmanZipper::ReadZipFileEncodings(std::ifstream &encodedFile,
 
   delete encodingMap;
   return decodingTree;
+}
+
+void HuffmanZipper::DecodeZipFileBody(std::ifstream &zippedFile, 
+                                      std::ofstream &outFile, 
+                                      std::streampos bodyOffset, 
+                                      HuffmanTree *decodingTree) {
+  zippedFile.seekg(bodyOffset);
+  char currByte;
+
+  // std::cout << bodyOffset;
+  while (zippedFile.good()) {
+    zippedFile.read(&currByte, 1);
+    // Break byte into a bitstring
+    std::bitset<8> byteBitSet(currByte);
+    std::string byteBitString = byteBitSet.to_string();
+    std::vector<int> decodeVector = decodingTree->DecodeBitString(byteBitString);
+    for (auto iter = decodeVector.begin(); iter != decodeVector.end(); iter++) {
+      int currDecode = *iter;
+      if (currDecode == eofVal || currDecode == -1) {
+        return;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+      } else {
+        outFile << ((char) currDecode);
+      }
+    }
+  }
 }
 
 std::string HuffmanZipper::ReadBitStringFromFile(std::ifstream &file, 

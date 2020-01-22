@@ -5,6 +5,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace huffmanzipper {
 
@@ -21,6 +22,11 @@ class HuffmanTree {
 
   // Returns a map that goes between ints and the string binary representation
   std::unordered_map<int, std::string> *getEncodings();
+
+  // Give the HuffmanTree bits to process and the tree will maintain the
+  // position of last bit during encoding.  It will return an int vector of all
+  // the ints/chars decoded from bits given.
+  std::vector<int> DecodeBitString(std::string bitString);
   
 
   // Node class that makes up the HuffmanTree 
@@ -45,6 +51,7 @@ class HuffmanTree {
   };
   
   HuffmanNode *root_;
+  HuffmanNode *currDecodeNode_;
  private:
   void traverseEncodings(HuffmanNode *root, 
                          std::unordered_map<int, std::string> *map, 

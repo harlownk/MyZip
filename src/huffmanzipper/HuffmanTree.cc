@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <iostream>
+#include <vector>
 #include <cstdlib>
 
 #include "HuffmanTree.h"
@@ -34,6 +35,7 @@ HuffmanTree::HuffmanTree(int *counts, int size) : root_(nullptr) {
     queue.push(newNode);
   }
   root_ = queue.top();
+  currDecodeNode_ = root_;
 }
 
 HuffmanTree::HuffmanTree(std::unordered_map<int, std::string> *map) : root_(nullptr) {
@@ -42,6 +44,7 @@ HuffmanTree::HuffmanTree(std::unordered_map<int, std::string> *map) : root_(null
     std::string encoding = (*iter).second;
     root_ = AddCodeToTree(root_, encoding, currCode);
   }
+  currDecodeNode_ = root_;
 }
 
 HuffmanTree::~HuffmanTree() {
@@ -55,6 +58,30 @@ std::unordered_map<int, std::string> *HuffmanTree::getEncodings() {
   auto *encodingMap = new std::unordered_map<int, std::string>;
   traverseEncodings(root_, encodingMap, "");
   return encodingMap;
+}
+
+// TODO THIS DOESN"T WORK YET. It decodes the first couple strings correctly,
+// then will 
+std::vector<int> HuffmanTree::DecodeBitString(const std::string bitString) {
+  std::vector<int> resultVector;
+  for (auto iter = bitString.begin(); iter != bitString.end(); iter++) {
+    char currChar = *iter;
+    if (currChar == '0') {
+      currDecodeNode_ = currDecodeNode_->left_;
+    } else if (currChar == '1') {
+      currDecodeNode_ = currDecodeNode_->right_;
+    }
+    
+    if (currDecodeNode_ == nullptr) {
+      resultVector.push_back(-1);
+      currDecodeNode_ = root_;
+    } else if (currDecodeNode_->byteCode_ != -1) {
+      resultVector.push_back(currDecodeNode_->byteCode_);
+      currDecodeNode_ = root_;  
+    }
+  }
+
+  return resultVector;
 }
 
 void HuffmanTree::traverseEncodings(HuffmanNode *root, 

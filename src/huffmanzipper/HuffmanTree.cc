@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <iostream>
+#include <vector>
 #include <cstdlib>
 
 #include "HuffmanTree.h"
@@ -34,16 +35,53 @@ HuffmanTree::HuffmanTree(int *counts, int size) : root_(nullptr) {
     queue.push(newNode);
   }
   root_ = queue.top();
+  currDecodeNode_ = root_;
+}
+
+HuffmanTree::HuffmanTree(std::unordered_map<int, std::string> *map) : root_(nullptr) {
+  for (auto iter = map->begin(); iter != map->end(); iter++) {
+    int currCode = (*iter).first;
+    std::string encoding = (*iter).second;
+    root_ = AddCodeToTree(root_, encoding, currCode);
+  }
+  currDecodeNode_ = root_;
 }
 
 HuffmanTree::~HuffmanTree() {
-  delete root_;
+  if (root_) {
+    delete root_;
+  }
 }
+
 
 std::unordered_map<int, std::string> *HuffmanTree::getEncodings() {
   auto *encodingMap = new std::unordered_map<int, std::string>;
   traverseEncodings(root_, encodingMap, "");
   return encodingMap;
+}
+
+// TODO THIS DOESN"T WORK YET. It decodes the first couple strings correctly,
+// then will 
+std::vector<int> HuffmanTree::DecodeBitString(const std::string bitString) {
+  std::vector<int> resultVector;
+  for (auto iter = bitString.begin(); iter != bitString.end(); iter++) {
+    char currChar = *iter;
+    if (currChar == '0') {
+      currDecodeNode_ = currDecodeNode_->left_;
+    } else if (currChar == '1') {
+      currDecodeNode_ = currDecodeNode_->right_;
+    }
+    
+    if (currDecodeNode_ == nullptr) {
+      resultVector.push_back(-1);
+      currDecodeNode_ = root_;
+    } else if (currDecodeNode_->byteCode_ != -1) {
+      resultVector.push_back(currDecodeNode_->byteCode_);
+      currDecodeNode_ = root_;  
+    }
+  }
+
+  return resultVector;
 }
 
 void HuffmanTree::traverseEncodings(HuffmanNode *root, 
@@ -56,6 +94,29 @@ void HuffmanTree::traverseEncodings(HuffmanNode *root,
     traverseEncodings(root->right_, map, currEncoding + "1");
   }
 }
+
+HuffmanTree::HuffmanNode 
+*HuffmanTree::AddCodeToTree(HuffmanTree::HuffmanNode *root, std::string currEncoding, int code) {
+  if (currEncoding.size() == 0) {
+    // We reached the end
+    root = new HuffmanNode(code, 0);
+    return root;
+  } else if (root == NULL) {
+    // We need to add a node to the tree, set the code to an arbitrary
+    // value to denote a non ending node.
+    // Make the count/frequency a nonsense value since it doesnt matter 
+    // for this type of tree.
+    root = new HuffmanNode(-1, 0);
+  }
+
+  if (currEncoding.at(0) == '0') {
+    root->left_ = AddCodeToTree(root->left_, currEncoding.substr(1), code);
+  } else {
+    root->right_ = AddCodeToTree(root->right_, currEncoding.substr(1), code);
+  }
+  return root;
+}
+
 
 // HuffmanNode declarations.
 HuffmanTree::HuffmanNode::HuffmanNode(int code, int count) {
@@ -78,5 +139,10 @@ HuffmanTree::HuffmanNode::~HuffmanNode() {
 int HuffmanTree::HuffmanNode::operator<(const HuffmanNode &other) {
   return other.count_ < count_;
 }
+
+// HuffmanTree::HuffmanNode 
+// &HuffmanTree::HuffmanNode::operator=(HuffmanTree::HuffmanNode &rightHandSide) {
+//   *this = rightHandSide;
+// }
 
 }  // namespace huffmanzipper

@@ -21,11 +21,15 @@ namespace huffmanzipper {
 //
 //                EncodingInfo structs 
 //            +-----------------------------------+
-//            |                                   | 
-//            |                                   |
-//            |                                   |
-//            |                                   |
-//            |       // TODO: Documentation                           |
+//            |   char/int code  ascii            | 
+//            |      4 bytes                      |
+//            +-----------------------------------+
+//            |   encoding size in bits           |
+//            |      2 bytes                      |
+//            +-----------------------------------+
+//            |   full encoding                   |
+//            |     bit-length equal to size      |
+//            |        field. Variable length     |
 //            |                                   |
 //            +-----------------------------------+
 //
@@ -34,8 +38,9 @@ namespace huffmanzipper {
 class ZipperEncodings {
  public:
   ZipperEncodings(const std::unordered_map<int, std::string> &map);
+  ZipperEncodings(std::string bitString);
   // ~ZipperEncodings();
-
+  std::unordered_map<int, std::string> *GetEncodingMap();
   // Creates an entire bitstring that is writable.
   std::string ToBitString();
   // Converts all of the contained EncodingInfos to hostformat, able to be 
@@ -76,6 +81,7 @@ class ZipperEncodings {
   };  // class EncodingsInfo
 
   // Fields:
+  int32_t size_;
   std::list<EncodingInfo> allEncodingInfo_;
 };  // class ZipperEncodings
 

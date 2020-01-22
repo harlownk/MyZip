@@ -4,6 +4,7 @@
 #define SRC_BYTEINVENTORY_H_
 
 #include <string>
+#include <cstdint>
 
 #define BI_NUM_ITEMS 256
 
@@ -20,7 +21,7 @@ class ByteInventory {
   ~ByteInventory();
 
   // Add a new item to the inventory. If the byte is invalid there is no effect.
-  void addByte(int byte, int count=1);
+  void addByte(uint16_t byte, int count=1);
 
   // Gets the count of the given byte in the inventory. Returns -1 if the byte
   // is invalid.

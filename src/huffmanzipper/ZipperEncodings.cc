@@ -35,10 +35,63 @@ ZipperEncodings::ZipperEncodings(const std::unordered_map<int, std::string> &map
     // Push the structure onto the end of the list.
     allEncodingInfo_.push_back(currInfo);
   }
+  size_ = allEncodingInfo_.size();
+}
+
+ZipperEncodings::ZipperEncodings(const std::string paramBitString) {
+  std::string bitString = paramBitString;
+  std::string sizeBitString = bitString.substr(0, sizeof(int32_t) * 8);
+  bitString = bitString.substr(sizeof(int32_t) * 8);
+  size_ = std::bitset<32>(sizeBitString).to_ulong();
+  int listSize = ntohl(size_);
+
+  // Build the list.
+  for (int i = 0; i < listSize; i++) {
+    EncodingInfo currInfo;
+    // Get the code bits from the bit string.
+    std::string codeBitString = bitString.substr(0, sizeof(currInfo.code_) * 8);
+    bitString = bitString.substr(sizeof(currInfo.code_) * 8);
+    currInfo.code_ = std::bitset<32>(codeBitString).to_ulong();
+    // Get the bitLengthBits bits from the bit string.
+    std::string bitLengthBitString = bitString.substr(0, sizeof(currInfo.encodingSizeBits_) * 8);
+    bitString = bitString.substr(sizeof(currInfo.encodingSizeBits_) * 8);
+    currInfo.encodingSizeBits_ = std::bitset<16>(bitLengthBitString).to_ulong();
+
+    // Convert to Host format, then use the size to trim the encoding stream.
+    currInfo.ToHostFormat();
+    
+
+    int excessSizeBits;
+    int readSize;
+    if ((excessSizeBits = 8 - (currInfo.encodingSizeBits_ % 8)) != 8) {
+      readSize = currInfo.encodingSizeBits_ + excessSizeBits;
+    } else {
+      readSize = currInfo.encodingSizeBits_;
+    }
+    currInfo.encoding_ = bitString.substr(0, readSize);
+    bitString = bitString.substr(readSize);
+    int excess = readSize - currInfo.encodingSizeBits_;
+    currInfo.encoding_ = currInfo.encoding_.substr(excess);
+    currInfo.ToDiskFormat();
+
+    // Add to list.
+    allEncodingInfo_.push_back(currInfo);    
+  }
+}
+
+// Passes ownership of the map to the caller.
+std::unordered_map<int, std::string> *ZipperEncodings::GetEncodingMap() {
+  auto *result = new std::unordered_map<int, std::string>;
+  for (auto iter = allEncodingInfo_.begin(); iter != allEncodingInfo_.end(); iter++) {
+    EncodingInfo currEncoding = *iter;
+    result->insert({currEncoding.code_, currEncoding.encoding_});
+  }
+  return result;
 }
 
 std::string ZipperEncodings::ToBitString() {
   std::string result("");
+  result += FieldToBitString((uint32_t) size_);
   for (auto iter = allEncodingInfo_.begin(); iter != allEncodingInfo_.end(); iter++) {
     EncodingInfo currInfo = *iter;
     result += currInfo.ToBitString();
@@ -47,16 +100,16 @@ std::string ZipperEncodings::ToBitString() {
 }
 
 void ZipperEncodings::ToHostFormat() {
+  size_ = ntohl(size_);
   for (auto iter = allEncodingInfo_.begin(); iter != allEncodingInfo_.end(); iter++) {
-    EncodingInfo currInfo = *iter;
-    currInfo.ToHostFormat();
+    (*iter).ToHostFormat();
   }
 }
 
 void ZipperEncodings::ToDiskFormat() {
+  size_ = htonl(size_);
   for (auto iter = allEncodingInfo_.begin(); iter != allEncodingInfo_.end(); iter++) {
-    EncodingInfo currInfo = *iter;
-    currInfo.ToDiskFormat();
+    (*iter).ToDiskFormat();
   }
 }
 
@@ -76,8 +129,8 @@ void ZipperEncodings::EncodingInfo::ToHostFormat() {
 }
 
 void ZipperEncodings::EncodingInfo::ToDiskFormat() {
-  code_ = htonl(code_);
-  encodingSizeBits_ = htons(encodingSizeBits_);
+  code_ = ntohl(code_);
+  encodingSizeBits_ = ntohs(encodingSizeBits_);
 }
 
 

@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "ZipperHeader.h"
+#include "HuffmanTree.h"
 
 // TODO Docs
 namespace huffmanzipper {
@@ -33,6 +34,24 @@ class HuffmanZipper {
                        std::streampos offset,
                        std::string origFileName,
                        std::unordered_map<int, std::string> *map);
+  
+  ZipperHeader ReadZipFileHeader(std::ifstream &encodedFile, 
+                                 std::streampos offset);
+
+  // Returns a HuffmanTree pointer, passing responsibility of the allocated 
+  // memory to the caller.
+  HuffmanTree *ReadZipFileEncodings(std::ifstream &encodedFile,
+                                    std::streampos encodingOffset,
+                                    int encodingsLength);
+
+  // Reads from the encoded/zipped file starting at the given offset, decodes 
+  // the file byte-by-byte using the given HuffmanTree, and then writing 
+  // the output through the file provided.
+  void DecodeZipFileBody(std::ifstream &zippedFile, 
+                         std::ofstream &outFile, 
+                         std::streampos bodyOffset, 
+                         HuffmanTree *decodingTree);
+
 
   // Converts the bitstring to the corresponding bitstream that is then written
   // to the ofstream.  Will only write bitstrings that are of length % 8 == 0.  
@@ -43,6 +62,10 @@ class HuffmanZipper {
   // Returns -1 if there was an error writing, otherwise returns the number of 
   // bytes written.
   int WriteBitStringToFile(std::string bitString, std::fstream &outfile);
+
+  std::string ReadBitStringFromFile(std::ifstream &file, 
+                                    std::streampos start, 
+                                    int numBytes);
 };  // class HuffmanZipper
 
 }

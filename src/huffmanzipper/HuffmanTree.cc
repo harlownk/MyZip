@@ -60,8 +60,6 @@ std::unordered_map<int, std::string> *HuffmanTree::getEncodings() {
   return encodingMap;
 }
 
-// TODO THIS DOESN"T WORK YET. It decodes the first couple strings correctly,
-// then will 
 std::vector<int> HuffmanTree::DecodeBitString(const std::string bitString) {
   std::vector<int> resultVector;
   for (auto iter = bitString.begin(); iter != bitString.end(); iter++) {

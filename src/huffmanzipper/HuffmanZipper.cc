@@ -52,8 +52,8 @@ bool HuffmanZipper::ZipFile(string file_name) {
 
   // Make an encoding tree:
   // Convert BI into an array.
-  int *counts = new int[BI_NUM_ITEMS + 2];
-  for (int i = 0; i < arrSize - 2; i++) {
+  int *counts = new int[BI_NUM_ITEMS + 1];
+  for (int i = 0; i < arrSize - 1; i++) {
     counts[i] = bi.getCount(i);
   }
   counts[eofVal] = 1;   // This value is the EOF 'bytevalue'
@@ -163,28 +163,25 @@ int HuffmanZipper::WriteZipFileBody(std::fstream &zipFile,
                                     std::unordered_map<int, string> *map) {
   auto &mapRef = *map;
   // Open the file to read from that is going to be zipped.
-  std::ifstream oldFile(origFileName, std::ios_base::binary);
+  std::ifstream oldFile(origFileName, std::ios::binary);
   if (!oldFile.is_open()) {  // File couldnt open correctly.
     return -1;
   }
+  oldFile >> std::noskipws;
   zipFile.seekp(offset);
 
   // Read through the whole file.
   char currChar = 0;
   string encodingBuffer("");
-  while (oldFile.good()) {
-    oldFile.read(&currChar, 1);
-    if (currChar == -1) {
-      break;
-    }
-    string currCharEncoded(""); 
-    // try {
-      currCharEncoded = mapRef[currChar];
-    // } catch (const std::out_of_range &e) {
-    //   std::cerr << "Error: Can't find encoding. " << e << std::endl;
-    //   return -1;
-    // }
+  while (oldFile >> currChar) {
+    string currCharEncoded("");
+    int key = (int) (unsigned char) currChar;
+
+    currCharEncoded = mapRef[key];
     encodingBuffer += currCharEncoded;
+    if (key == 255) {
+      std::cout << currCharEncoded << std::endl;
+    }
     if (encodingBuffer.size() > WRITE_BUFFER_SIZE * 8) {
       // Filled the buffer, write to file.
       // Trim down to a multiple of 8 for bytelength.
@@ -197,7 +194,7 @@ int HuffmanZipper::WriteZipFileBody(std::fstream &zipFile,
       encodingBuffer = excess;
     }
   }  // Whole file read and encoded.  Any excess needs writen to the file.
-  string eofCode = mapRef[currChar];
+  string eofCode = mapRef[eofVal];
   encodingBuffer += eofCode;
   WriteBitStringToFile(encodingBuffer, zipFile);
   return 1;
@@ -267,11 +264,11 @@ void HuffmanZipper::DecodeZipFileBody(std::ifstream &zippedFile,
   zippedFile.seekg(bodyOffset);
   char currByte;
 
-  // std::cout << bodyOffset;
   while (zippedFile.good()) {
     zippedFile.read(&currByte, 1);
     // Break byte into a bitstring
-    std::bitset<8> byteBitSet(currByte);
+    unsigned char myByte = (unsigned char) currByte;
+    std::bitset<8> byteBitSet(myByte);
     std::string byteBitString = byteBitSet.to_string();
     std::vector<int> decodeVector = decodingTree->DecodeBitString(byteBitString);
     for (auto iter = decodeVector.begin(); iter != decodeVector.end(); iter++) {
@@ -279,7 +276,7 @@ void HuffmanZipper::DecodeZipFileBody(std::ifstream &zippedFile,
       if (currDecode == eofVal || currDecode == -1) {
         return;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
       } else {
-        outFile << ((char) currDecode);
+        outFile << ((unsigned char) currDecode);
       }
     }
   }

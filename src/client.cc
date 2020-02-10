@@ -35,13 +35,18 @@ int main(int argc, char** argv) {
       exit(EXIT_FAILURE);
     }
   } else if (string(argv[1]).compare("u") == 0) {  // Unzip mode
-    zipper.UnzipFile(file_name);
+    std::cout << "Unzipping " << file_name << std::endl;
+    if (zipper.UnzipFile(file_name)) {
+      std::cout << "Unzip Successful." << std::endl;
+    } else {
+      std::cout << "Unzip Unsuccessful." << std::endl;
+      exit(EXIT_FAILURE);
+    }
   } else {
     std::cerr << "mode " << argv[1] << " not recognized." << std::endl;
     exit(EXIT_FAILURE);
   }
   exit(EXIT_SUCCESS);
-
 }
 
 static void PrintUsage() {

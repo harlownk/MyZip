@@ -29,7 +29,9 @@ std::string FieldToBitString(uint64_t field);
 
 // Takes the zipFile and calculates the CRC of the file starting at the 
 // byte at startOffset until the end of the file.
-int32_t GetCRCOfFile(std::fstream &zipFile, std::streampos startOffset);
+uint32_t GetCRCOfFile(std::fstream &zipFile, std::streampos startOffset);
+
+uint32_t GetCRCOfFile(std::ifstream &zipFile, std::streampos startOffset);
 
 // Converts the 64bit value to network order.
 uint64_t htonll(uint64_t x);

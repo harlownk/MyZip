@@ -29,7 +29,7 @@ namespace huffmanzipper {
 static const int arrSize = BI_NUM_ITEMS + 1;
 static const int eofVal = arrSize - 1;
 
-static const int32_t magicWord = 0xc0defade;
+static const uint32_t magicWord = 0xc0defade;
 static const string zipFileEnding = ".mzip";
 
 bool HuffmanZipper::ZipFile(string file_name) {
@@ -99,29 +99,31 @@ bool HuffmanZipper::ZipFile(string file_name) {
 }
 
 bool HuffmanZipper::UnzipFile(string file_name) {
-  std::cout << "Unzipping " << file_name << std::endl;
   // Open file.
   std::ifstream zippedFile(file_name);
   // Get the header of the zip file.
   ZipperHeader header = ReadZipFileHeader(zippedFile, 0);
   // Check header and file integrity.  header returned in host format.
-  // TODO Check magicword, and crc of the file, make sure they are correct.
-  // if (header.magicCode_ != magicWord) {
-  //   return false;
-  // }
-  // int32_t fileCRC = CRCGetCRCOfFile();
+  // Check magicword, and crc of the file, make sure they are correct.
+  if (header.magicCode_ != magicWord) {
+    return false;
+  }
+  uint32_t fileCRC = GetCRCOfFile(zippedFile, sizeof(ZipperHeader));
+  if (fileCRC != header.checkSum_) {
+    return false;
+  }
   // Parse translation lookup-table from header into memory
   int encodingsLength = header.bodyOffset_ - header.encodingsOffset_;
   HuffmanTree *encodingTree = ReadZipFileEncodings(zippedFile, 
                                                   header.encodingsOffset_, 
                                                   encodingsLength);
   // Read the encoded file translating and writing decoded file.
-  std::string newFileName(file_name.substr(0, file_name.size() - zipFileEnding.size() + 1));
+  std::string newFileName(file_name.substr(0, file_name.size() - zipFileEnding.size()));
   std::ofstream decodedWriteFile(newFileName, std::ifstream::binary);
   DecodeZipFileBody(zippedFile, decodedWriteFile, header.bodyOffset_, encodingTree);
 
   delete encodingTree;
-  return false;
+  return true;
 }
 
 int HuffmanZipper::WriteZipFileHeader(std::fstream &zipFile,

@@ -22,6 +22,7 @@
 #include "../util/Util.h"
 
 using std::string;
+using util::GetCRCOfFile;
 
 namespace huffmanzipper {
 

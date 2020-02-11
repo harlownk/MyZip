@@ -7,6 +7,10 @@
 #include "ZipperHeader.h"
 #include "../util/Util.h"
 
+using util::FieldToBitString;
+using util::ntohll;
+using util::htonll;
+
 namespace huffmanzipper {
 
 ZipperHeader::ZipperHeader(std::string bitString) {

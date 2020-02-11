@@ -6,7 +6,7 @@
 #include <cstdint>
 
 #include "ZipperEncodings.h"
-#include "Util.h"
+#include "../util/Util.h"
 
 namespace huffmanzipper {
 
@@ -91,7 +91,7 @@ std::unordered_map<int, std::string> *ZipperEncodings::GetEncodingMap() {
 
 std::string ZipperEncodings::ToBitString() {
   std::string result("");
-  result += FieldToBitString((uint32_t) size_);
+  result += util::FieldToBitString((uint32_t) size_);
   for (auto iter = allEncodingInfo_.begin(); iter != allEncodingInfo_.end(); iter++) {
     EncodingInfo currInfo = *iter;
     result += currInfo.ToBitString();
@@ -117,8 +117,8 @@ void ZipperEncodings::ToDiskFormat() {
 // EncodingInfo method declarations
 std::string ZipperEncodings::EncodingInfo::ToBitString() {
   std::string result("");
-  result += FieldToBitString((uint32_t) code_);
-  result += FieldToBitString((uint16_t) encodingSizeBits_);
+  result += util::FieldToBitString((uint32_t) code_);
+  result += util::FieldToBitString((uint16_t) encodingSizeBits_);
   result += encoding_;
   return result;
 }

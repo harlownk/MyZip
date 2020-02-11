@@ -5,7 +5,7 @@
 #include <cstdint>
 
 #include "ZipperHeader.h"
-#include "Util.h"
+#include "../util/Util.h"
 
 namespace huffmanzipper {
 

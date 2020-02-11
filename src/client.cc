@@ -23,6 +23,12 @@ int main(int argc, char** argv) {
     PrintUsage();
   }
 
+  // TODO Add directory support.
+  // Check if file given is directory or reg file
+  // If dir: Recursively zip each directory by zipping files recursively.
+  // If file: zip given file.
+
+
   // Execute the commands.
   string file_name(argv[2]);
   HuffmanZipper zipper;

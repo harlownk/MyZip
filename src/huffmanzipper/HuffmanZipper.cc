@@ -19,7 +19,7 @@
 #include "ZipperEncodings.h"
 #include "ByteInventory.h"
 #include "HuffmanTree.h"
-#include "Util.h"
+#include "../util/Util.h"
 
 using std::string;
 

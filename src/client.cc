@@ -10,6 +10,7 @@
 
 #include "client.h"
 #include "huffmanzipper/HuffmanZipper.h"
+#include "util/FileSystemIterator.h"
 
 using std::string;
 using huffmanzipper::HuffmanZipper;

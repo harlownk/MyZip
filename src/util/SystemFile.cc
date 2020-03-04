@@ -2,6 +2,7 @@
 
 #include <string>
 #include <dirent.h>
+#include <sys/stat.h>
 
 #include "SystemFile.h"
 

@@ -19,7 +19,7 @@ class DirectoryIterator {
   SystemFile GetNext();
  private:
   DIR *dir_;
-  SystemFile *next_;
+  struct dirent *next_;
 };  // class DirectoryIterator
 
 }  // namespace util 

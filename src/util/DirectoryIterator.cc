@@ -10,12 +10,33 @@ namespace util {
 
 DirectoryIterator::DirectoryIterator(std::string dirName) : next_(nullptr) {
   dir_ = opendir(dirName.c_str());
-
 }
 
 DirectoryIterator::~DirectoryIterator() {
   closedir(dir_);
 }
-  
+
+bool DirectoryIterator::HasNext() {
+  if (next_ == NULL) {
+    next_ = readdir(dir_);
+    return next_ != NULL;
+  } else {
+    return true;
+  }
+}
+
+SystemFile DirectoryIterator::GetNext() {
+  if (next_ == nullptr) {
+    next_ = readdir(dir_);
+    if (next_ == nullptr) {
+      return NULL;
+    }
+    return SystemFile(next_);
+  } else {
+    SystemFile result(next_);
+    next_ = nullptr;
+    return result;
+  }
+}
 
 }

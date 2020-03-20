@@ -30,7 +30,12 @@ int main(int argc, char** argv) {
     std::string fileName = string(argv[2]);
     DirectoryIterator dirIter(fileName);
     while (dirIter.HasNext()) {
-      std::cout << dirIter.GetNext().GetFileName() << std::endl;
+      util::SystemFile nextFile = dirIter.GetNext();
+      if (nextFile.IsDirectory()) {
+        std::cout << nextFile.GetFileName() << "/" << std::endl;
+      } else {
+        std::cout << nextFile.GetFileName() << std::endl;
+      }
     }  
     return EXIT_SUCCESS;
   }

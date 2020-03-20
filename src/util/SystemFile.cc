@@ -29,6 +29,10 @@ bool SystemFile::IsDirectory() {
 bool SystemFile::IsFile() {
   std::string filename = GetFileName();
   struct stat statInfo;
+  // TODO ENOENT error is happening here on occasion. Happens
+  // when I give a directory that is deeper than where client is instantiated.
+  // I think the filename isn't 'absolute enough' for stat to work. Wont even 
+  // work on directories in directories that are that deep.
   if (stat(filename.c_str(), &statInfo)) {
     // Error happened here somewhere
     return false;

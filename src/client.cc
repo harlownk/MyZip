@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
       util::SystemFile nextFile = dirIter.GetNext();
       if (nextFile.IsDirectory()) {
         std::cout << nextFile.GetFileName() << "/" << std::endl;
-      } else {
+      } else if (nextFile.IsFile()) {
         std::cout << nextFile.GetFileName() << std::endl;
       }
     }  

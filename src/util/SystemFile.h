@@ -10,13 +10,14 @@ namespace util {
   
 class SystemFile {
  public:
-  SystemFile(struct dirent *fileEntry);
+  SystemFile(std::string filePath);
   ~SystemFile();
   bool IsDirectory();
   bool IsFile();
   std::string GetFileName();
  private:
-  struct dirent *fileEntry_;
+  std::string filePath_;
+  // struct dirent *fileEntry_;
 };
 
 }  // namespace util

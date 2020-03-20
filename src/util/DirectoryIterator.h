@@ -18,6 +18,7 @@ class DirectoryIterator {
   bool HasNext();
   SystemFile GetNext();
  private:
+  std::string dirName_;
   DIR *dir_;
   struct dirent *next_;
 };  // class DirectoryIterator

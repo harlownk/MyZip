@@ -9,6 +9,10 @@
 namespace util {
 
 DirectoryIterator::DirectoryIterator(std::string dirName) : next_(nullptr) {
+  dirName_ = dirName;
+  if (dirName_.back() == '/') {
+    dirName_ = dirName_.substr(0, dirName_.size() - 1);
+  }
   dir_ = opendir(dirName.c_str());
 }
 
@@ -32,11 +36,13 @@ SystemFile DirectoryIterator::GetNext() {
   if (next_ == nullptr) {
     next_ = readdir(dir_);
     if (next_ == nullptr) {
-      return NULL;
+      return SystemFile("");
     }
-    return SystemFile(next_);
+    std::string filename(next_->d_name);
+    return SystemFile(dirName_ + "/" + filename);
   } else {
-    SystemFile result(next_);
+    std::string filename(next_->d_name);
+    SystemFile result(dirName_ + "/" + filename);
     next_ = nullptr;
     return result;
   }

@@ -10,9 +10,7 @@
 
 namespace util {
 
-SystemFile::SystemFile(struct dirent *fileEntry) {
-  fileEntry_ = fileEntry;
-}
+SystemFile::SystemFile(std::string filePath) : filePath_(filePath) {}
 
 SystemFile::~SystemFile() {}
 
@@ -43,8 +41,7 @@ bool SystemFile::IsFile() {
 
 
 std::string SystemFile::GetFileName() {
-  std::string result(fileEntry_->d_name);
-  return result;
+  return filePath_;
 }
 
 }  // namespace util

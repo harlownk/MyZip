@@ -14,6 +14,7 @@
 
 using std::string;
 using huffmanzipper::HuffmanZipper;
+using util::DirectoryIterator;
 
 int main(int argc, char** argv) {
   // Do Preliminary checks.
@@ -22,6 +23,16 @@ int main(int argc, char** argv) {
     PrintCommandHelp();
   } else if (argc != 3) {
     PrintUsage();
+  }
+
+
+  if (string(argv[1]).compare("f") == 0) {
+    std::string fileName = string(argv[2]);
+    DirectoryIterator dirIter(fileName);
+    while (dirIter.HasNext()) {
+      std::cout << dirIter.GetNext().GetFileName() << std::endl;
+    }  
+    return EXIT_SUCCESS;
   }
 
   // TODO Add directory support.

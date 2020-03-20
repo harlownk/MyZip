@@ -17,12 +17,15 @@ DirectoryIterator::~DirectoryIterator() {
 }
 
 bool DirectoryIterator::HasNext() {
-  if (next_ == NULL) {
-    next_ = readdir(dir_);
-    return next_ != NULL;
-  } else {
-    return true;
+  if (dir_!= nullptr) {
+    if (next_ == NULL) {
+      next_ = readdir(dir_);
+      return next_ != nullptr;
+    } else {
+      return true;
+    }
   }
+  return false;
 }
 
 SystemFile DirectoryIterator::GetNext() {

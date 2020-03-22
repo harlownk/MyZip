@@ -6,6 +6,7 @@
 #include <string>
 #include <unordered_map>
 
+static void TraverseFileSystem(std::string fileName);
 static void PrintCommandHelp();
 static void PrintUsage();
 

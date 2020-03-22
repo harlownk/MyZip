@@ -28,15 +28,7 @@ int main(int argc, char** argv) {
 
   if (string(argv[1]).compare("f") == 0) {
     std::string fileName = string(argv[2]);
-    DirectoryIterator dirIter(fileName);
-    while (dirIter.HasNext()) {
-      util::SystemFile nextFile = dirIter.GetNext();
-      if (nextFile.IsDirectory()) {
-        std::cout << nextFile.GetFileName() << "/" << std::endl;
-      } else if (nextFile.IsFile()) {
-        std::cout << nextFile.GetFileName() << std::endl;
-      }
-    }  
+    TraverseFileSystem(fileName);  
     return EXIT_SUCCESS;
   }
 
@@ -70,6 +62,19 @@ int main(int argc, char** argv) {
     exit(EXIT_FAILURE);
   }
   exit(EXIT_SUCCESS);
+}
+
+static void TraverseFileSystem(std::string fileName) {
+  DirectoryIterator dirIter(fileName);
+  while (dirIter.HasNext()) {
+    util::SystemFile nextFile = dirIter.GetNext();
+    if (nextFile.IsDirectory() && !nextFile.IsRelativeDir()) {
+      std::cout << nextFile.GetFileName() << "/" << std::endl;
+      TraverseFileSystem(nextFile.GetFileName());
+    } else if (nextFile.IsFile()) {
+      std::cout << nextFile.GetFileName() << std::endl;
+    }
+  }
 }
 
 static void PrintUsage() {

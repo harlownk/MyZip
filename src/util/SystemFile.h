@@ -14,6 +14,7 @@ class SystemFile {
   ~SystemFile();
   bool IsDirectory();
   bool IsFile();
+  bool IsRelativeDir();
   std::string GetFileName();
  private:
   std::string filePath_;

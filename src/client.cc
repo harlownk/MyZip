@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 
   if (string(argv[1]).compare("f") == 0) {
     std::string fileName = string(argv[2]);
-    TraverseFileSystem(fileName, "");  
+    ZipDirectory(fileName, fileName + ".mzip");  
     return EXIT_SUCCESS;
   }
 
@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
   exit(EXIT_SUCCESS);
 }
 
-static void TraverseFileSystem(std::string currDirPath, std::string zipDirPath) {
+static void ZipDirectory(std::string currDirPath, std::string zipDirPath) {
   HuffmanZipper zipper;
   DirectoryIterator dirIter(currDirPath);
   while (dirIter.HasNext()) {
@@ -79,14 +79,12 @@ static void TraverseFileSystem(std::string currDirPath, std::string zipDirPath) 
     if (nextFile.IsDirectory() && !nextFile.IsRelativeDir()) {
       // Get path of zipp directory,
       // zip directory by placing all files into this directory.
-      std::cout << nextFile.GetFilePath() << "/" << std::endl;
-      std::string newZipPathDir = zipDirPath + nextFile.GetFileName() + ".mzip";
-      std::cout << newZipPathDir << "/" << std::endl;
-      TraverseFileSystem(nextFile.GetFilePath(), newZipPathDir);
+      std::string newZipPathDir = zipDirPath + nextFile.GetFileName() + huffmanzipper::zipFileEnding;
+      ZipDirectory(nextFile.GetFilePath(), newZipPathDir);
     } else if (nextFile.IsFile()) {
       // Zip it
       std::string currFileName = nextFile.GetFilePath();
-      // zipper.ZipFile(currFileName);
+      zipper.ZipFile(currFileName, zipDirPath + "/" + nextFile.GetFileName() + huffmanzipper::zipFileEnding);
       // Make sure the zipped file is now in the zipped directory.
       std::cout << zipDirPath << nextFile.GetFileName() << std::endl;
     }

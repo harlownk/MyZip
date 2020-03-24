@@ -35,11 +35,15 @@ static const uint32_t magicWord = 0xc0defade;
 static const string zipFileEnding = ".mzip";
 
 bool HuffmanZipper::ZipFile(string file_name) {
-  // Open file that will be zipped.
+  return this->ZipFile(file_name, file_name + zipFileEnding);
+}
+
+bool HuffmanZipper::ZipFile(std::string filePath, std::string destinationPath) {
+// Open file that will be zipped.
   std::ifstream currfile;
-  currfile.open(file_name, std::ios::in | std::ios::binary);
+  currfile.open(filePath, std::ios::in | std::ios::binary);
   if (!currfile.is_open()) {  // Make sure the file actually openned.
-    std::cerr << "Error encountered while opening " << file_name << std::endl;
+    std::cerr << "Error encountered while opening " << filePath << std::endl;
     return false;
   }
   // Make a byte inventory of the file.
@@ -64,12 +68,12 @@ bool HuffmanZipper::ZipFile(string file_name) {
   // Make translation lookup-table from tree
   std::unordered_map<int, string> *encodingMap = tree.getEncodings();
 
-  std::fstream zipFile(file_name + zipFileEnding,  
+  std::fstream zipFile(destinationPath,  
                        std::ios::in | std::ios::out | 
                        std::ios_base::binary | std::ios_base::trunc);
   if (!zipFile.is_open()) {  // Make sure the zip file opens w/o error.
     std::cerr << "Error encountered while creating " << 
-                  file_name + zipFileEnding << std::endl;
+                  destinationPath << std::endl;
     delete[] counts;
     delete encodingMap;
     return false;
@@ -82,10 +86,10 @@ bool HuffmanZipper::ZipFile(string file_name) {
   currOffset += WriteZipFileEncodings(zipFile, currOffset, encodingMap);
   // Write the body of the zipfile.  Encode the actual file using the
   // encodings from the tree.
-  int bodyLen = WriteZipFileBody(zipFile, currOffset, file_name, encodingMap);
+  int bodyLen = WriteZipFileBody(zipFile, currOffset, filePath, encodingMap);
   if (bodyLen == -1) {
     std::cerr << "Error encountered while opening file to zip: " << 
-                 file_name << std::endl;
+                 filePath << std::endl;
     delete[] counts;
     delete encodingMap;
     return false;

@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 
-static void TraverseFileSystem(std::string currDirPath, std::string zipDirPath);
+static void ZipDirectory(std::string currDirPath, std::string zipDirPath);
 static void PrintCommandHelp();
 static void PrintUsage();
 

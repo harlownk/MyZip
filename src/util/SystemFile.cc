@@ -15,7 +15,7 @@ SystemFile::SystemFile(std::string filePath) : filePath_(filePath) {}
 SystemFile::~SystemFile() {}
 
 bool SystemFile::IsDirectory() {
-  std::string filename = GetFileName();
+  std::string filename = GetFilePath();
   struct stat statInfo;
   if (stat(filename.c_str(), &statInfo)) {
     // Error happened here somewhere
@@ -25,7 +25,7 @@ bool SystemFile::IsDirectory() {
 }
 
 bool SystemFile::IsFile() {
-  std::string filename = GetFileName();
+  std::string filename = GetFilePath();
   struct stat statInfo;
   if (stat(filename.c_str(), &statInfo)) {
     // Error happened here somewhere
@@ -38,7 +38,7 @@ bool SystemFile::IsRelativeDir() {
   if (!IsDirectory()) {
     return false;
   }
-  std::string filename = GetFileName();
+  std::string filename = GetFilePath();
   if (!filename.substr(filename.size() - 3).compare("/..") || 
       !filename.substr(filename.size() - 2).compare("/.")) {
     return true;
@@ -48,10 +48,13 @@ bool SystemFile::IsRelativeDir() {
   
 }
 
+std::string SystemFile::GetFilePath() {
+  return filePath_;
+}
 
 
 std::string SystemFile::GetFileName() {
-  return filePath_;
+  return filePath_.substr(filePath_.find_last_of('/'));
 }
 
 }  // namespace util

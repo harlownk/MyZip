@@ -13,6 +13,7 @@
 #include <fstream>
 #include <cstdint>
 #include <vector>
+#include <string>
 
 #include "HuffmanZipper.h"
 #include "ZipperHeader.h"

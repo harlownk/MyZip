@@ -15,6 +15,7 @@
 using std::string;
 using huffmanzipper::HuffmanZipper;
 using util::DirectoryIterator;
+using util::SystemFile;
 
 int main(int argc, char** argv) {
   // Do Preliminary checks.
@@ -28,7 +29,7 @@ int main(int argc, char** argv) {
 
   if (string(argv[1]).compare("f") == 0) {
     std::string fileName = string(argv[2]);
-    TraverseFileSystem(fileName);  
+    TraverseFileSystem(fileName, "");  
     return EXIT_SUCCESS;
   }
 
@@ -37,9 +38,15 @@ int main(int argc, char** argv) {
   // If dir: Recursively zip each directory by zipping files recursively.
   // If file: zip given file.
 
-
   // Execute the commands.
   string file_name(argv[2]);
+  // SystemFile inputFile(file_name);
+  // if (inputFile.IsFile()) {
+
+  // } else if (inputFile.IsDirectory()) {
+
+  // }
+
   HuffmanZipper zipper;
   if (string(argv[1]).compare("z") == 0) {  // Zip mode
     std::cout << "Zipping " << file_name << "..." << std::endl;
@@ -64,15 +71,24 @@ int main(int argc, char** argv) {
   exit(EXIT_SUCCESS);
 }
 
-static void TraverseFileSystem(std::string fileName) {
-  DirectoryIterator dirIter(fileName);
+static void TraverseFileSystem(std::string currDirPath, std::string zipDirPath) {
+  HuffmanZipper zipper;
+  DirectoryIterator dirIter(currDirPath);
   while (dirIter.HasNext()) {
     util::SystemFile nextFile = dirIter.GetNext();
     if (nextFile.IsDirectory() && !nextFile.IsRelativeDir()) {
-      std::cout << nextFile.GetFileName() << "/" << std::endl;
-      TraverseFileSystem(nextFile.GetFileName());
+      // Get path of zipp directory,
+      // zip directory by placing all files into this directory.
+      std::cout << nextFile.GetFilePath() << "/" << std::endl;
+      std::string newZipPathDir = zipDirPath + nextFile.GetFileName() + ".mzip";
+      std::cout << newZipPathDir << "/" << std::endl;
+      TraverseFileSystem(nextFile.GetFilePath(), newZipPathDir);
     } else if (nextFile.IsFile()) {
-      std::cout << nextFile.GetFileName() << std::endl;
+      // Zip it
+      std::string currFileName = nextFile.GetFilePath();
+      // zipper.ZipFile(currFileName);
+      // Make sure the zipped file is now in the zipped directory.
+      std::cout << zipDirPath << nextFile.GetFileName() << std::endl;
     }
   }
 }

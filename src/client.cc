@@ -17,6 +17,8 @@ using huffmanzipper::HuffmanZipper;
 using util::DirectoryIterator;
 using util::SystemFile;
 
+static const string ZIP_ENDING = ".mzip";
+
 int main(int argc, char** argv) {
   // Do Preliminary checks.
   if (argc == 1) {
@@ -79,12 +81,12 @@ static void ZipDirectory(std::string currDirPath, std::string zipDirPath) {
     if (nextFile.IsDirectory() && !nextFile.IsRelativeDir()) {
       // Get path of zipp directory,
       // zip directory by placing all files into this directory.
-      std::string newZipPathDir = zipDirPath + nextFile.GetFileName() + huffmanzipper::zipFileEnding;
+      std::string newZipPathDir = zipDirPath + nextFile.GetFileName() + ZIP_ENDING;
       ZipDirectory(nextFile.GetFilePath(), newZipPathDir);
     } else if (nextFile.IsFile()) {
       // Zip it
       std::string currFileName = nextFile.GetFilePath();
-      zipper.ZipFile(currFileName, zipDirPath + "/" + nextFile.GetFileName() + huffmanzipper::zipFileEnding);
+      zipper.ZipFile(currFileName, zipDirPath + "/" + nextFile.GetFileName() + ZIP_ENDING);
       // Make sure the zipped file is now in the zipped directory.
       std::cout << zipDirPath << nextFile.GetFileName() << std::endl;
     }

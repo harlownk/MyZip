@@ -22,6 +22,7 @@ class HuffmanZipper {
   bool ZipFile(std::string file_name);
   bool ZipFile(std::string filePath, std::string destinationPath);
   bool UnzipFile(std::string file_name);
+  bool UnzipFile(std::string filePath, std::string destinationPath)
   
  private:
   int WriteZipFileHeader(std::fstream &zipFile,

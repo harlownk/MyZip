@@ -105,8 +105,12 @@ bool HuffmanZipper::ZipFile(std::string filePath, std::string destinationPath) {
 }
 
 bool HuffmanZipper::UnzipFile(string file_name) {
+  return UnzipFile(file_name, file_name.substr(0, file_name.size() - zipFileEnding.size()));
+}
+
+bool HuffmanZipper::UnzipFile(std::string filePath, std::string destinationPath) {
   // Open file.
-  std::ifstream zippedFile(file_name);
+  std::ifstream zippedFile(filePath);
   // Get the header of the zip file.
   ZipperHeader header = ReadZipFileHeader(zippedFile, 0);
   // Check header and file integrity.  header returned in host format.
@@ -124,8 +128,7 @@ bool HuffmanZipper::UnzipFile(string file_name) {
                                                   header.encodingsOffset_, 
                                                   encodingsLength);
   // Read the encoded file translating and writing decoded file.
-  std::string newFileName(file_name.substr(0, file_name.size() - zipFileEnding.size()));
-  std::ofstream decodedWriteFile(newFileName, std::ifstream::binary);
+  std::ofstream decodedWriteFile(destinationPath, std::ifstream::binary);
   DecodeZipFileBody(zippedFile, decodedWriteFile, header.bodyOffset_, encodingTree);
 
   delete encodingTree;

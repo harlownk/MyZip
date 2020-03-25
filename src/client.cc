@@ -29,53 +29,37 @@ int main(int argc, char** argv) {
   } else if (argc != 3) {
     PrintUsage();
   }
-
-
-  if (string(argv[1]).compare("f") == 0) {
-    std::string fileName = string(argv[2]);
-    mkdir((fileName + ZIP_ENDING).c_str(), 00777);
-    ZipDirectory(fileName, fileName + ZIP_ENDING);  
-    return EXIT_SUCCESS;
-  }
-  if (string(argv[1]).compare("t") == 0) {
-    std::string fileName = string(argv[2]);
-    std::string destPath = fileName.substr(0, fileName.size() - ZIP_ENDING.size());
-    mkdir((destPath).c_str(), 00777);
-    UnzipDirectory(fileName, destPath);  
-    return EXIT_SUCCESS;
-  }
-
-  // TODO Add directory support.
-  // Check if file given is directory or reg file
-  // If dir: Recursively zip each directory by zipping files recursively.
-  // If file: zip given file.
+  
   // TODO Error detection still needs done.
 
   // Execute the commands.
   string file_name(argv[2]);
-  // SystemFile inputFile(file_name);
-  // if (inputFile.IsFile()) {
+  SystemFile inputFile(file_name);
 
-  // } else if (inputFile.IsDirectory()) {
-
-  // }
-
-  HuffmanZipper zipper;
   if (string(argv[1]).compare("z") == 0) {  // Zip mode
-    std::cout << "Zipping " << file_name << "..." << std::endl;
-    if (zipper.ZipFile(file_name)) {
-      std::cout << "Zip Successful." << std::endl;
+    // If FILE:
+    if (inputFile.IsFile()) {
+      ZipFile(file_name, "");
+    } else if (inputFile.IsDirectory() && !inputFile.IsRelativeDir()) {
+      std::string fileName = string(argv[2]);
+      mkdir((fileName + ZIP_ENDING).c_str(), 00777);
+      ZipDirectory(fileName, fileName + ZIP_ENDING);  
+      return EXIT_SUCCESS;
     } else {
-      std::cout << "Zip Unsuccessful." << std::endl;
-      exit(EXIT_FAILURE);
+      // Isn't zipable
     }
   } else if (string(argv[1]).compare("u") == 0) {  // Unzip mode
-    std::cout << "Unzipping " << file_name << std::endl;
-    if (zipper.UnzipFile(file_name)) {
-      std::cout << "Unzip Successful." << std::endl;
+    // If File:
+    if (inputFile.IsFile()) {
+      UnzipFile(file_name, "");
+    } else if (inputFile.IsDirectory() && !inputFile.IsRelativeDir()) {
+      std::string fileName = string(argv[2]);
+      std::string destPath = fileName.substr(0, fileName.size() - ZIP_ENDING.size());
+      mkdir((destPath).c_str(), 00777);
+      UnzipDirectory(fileName, destPath);  
+      return EXIT_SUCCESS;
     } else {
-      std::cout << "Unzip Unsuccessful." << std::endl;
-      exit(EXIT_FAILURE);
+      // Isn't unzipable
     }
   } else {
     std::cerr << "mode " << argv[1] << " not recognized." << std::endl;
@@ -85,9 +69,26 @@ int main(int argc, char** argv) {
 }
 
 static bool ZipFile(std::string fileLocation, std::string zipDestination) {
+  HuffmanZipper zipper;
+  std::cout << "Zipping " << fileLocation << "..." << std::endl;
+  if (zipper.ZipFile(fileLocation)) {
+    std::cout << "Zip Successful." << std::endl;
+  } else {
+    std::cout << "Zip Unsuccessful." << std::endl;
+    exit(EXIT_FAILURE);
+  }
   return true;
 }
+
 static bool UnzipFile(std::string fileLocation, std::string zipDestination) {
+  HuffmanZipper zipper;
+  std::cout << "Unzipping " << fileLocation << std::endl;
+  if (zipper.UnzipFile(fileLocation)) {
+    std::cout << "Unzip Successful." << std::endl;
+  } else {
+    std::cout << "Unzip Unsuccessful." << std::endl;
+    exit(EXIT_FAILURE);
+  }
   return true;
 }
 

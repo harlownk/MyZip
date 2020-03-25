@@ -49,6 +49,7 @@ int main(int argc, char** argv) {
   // Check if file given is directory or reg file
   // If dir: Recursively zip each directory by zipping files recursively.
   // If file: zip given file.
+  // TODO Error detection still needs done.
 
   // Execute the commands.
   string file_name(argv[2]);

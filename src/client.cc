@@ -19,6 +19,9 @@ using huffmanzipper::HuffmanZipper;
 using util::DirectoryIterator;
 using util::SystemFile;
 
+  // TODO Error detection still needs done.
+  // TODO Make sure that how we exit is consistant through the project (EXIT_SUCCESS) etc.
+
 static const string ZIP_ENDING = ".mzip";
 
 int main(int argc, char** argv) {
@@ -29,20 +32,15 @@ int main(int argc, char** argv) {
   } else if (argc != 3) {
     PrintUsage();
   }
-  
-  // TODO Error detection still needs done.
-  // TODO Make sure that how we exit is consistant through the project (EXIT_SUCCESS) etc.
-
   // Execute the commands.
-  string file_name(argv[2]);
-  SystemFile inputFile(file_name);
-
+  string fileName = string(argv[2]);
+  SystemFile inputFile(fileName);
   if (string(argv[1]).compare("z") == 0) {  // Zip mode
     // If FILE:
     if (inputFile.IsFile()) {
-      ZipFile(file_name, file_name + ZIP_ENDING);
+      ZipFile(fileName, fileName + ZIP_ENDING);
     } else if (inputFile.IsDirectory() && !inputFile.IsRelativeDir()) {
-      std::string fileName = string(argv[2]);
+      
       mkdir((fileName + ZIP_ENDING).c_str(), 00777);
       ZipDirectory(fileName, fileName + ZIP_ENDING);  
       return EXIT_SUCCESS;
@@ -51,22 +49,28 @@ int main(int argc, char** argv) {
     }
   } else if (string(argv[1]).compare("u") == 0) {  // Unzip mode
     // If File:
+    bool success;
     if (inputFile.IsFile()) {
-      UnzipFile(file_name, file_name.substr(0, file_name.size() - ZIP_ENDING.size()));
+      success = UnzipFile(fileName, fileName.substr(0, fileName.size() - ZIP_ENDING.size()));
     } else if (inputFile.IsDirectory() && !inputFile.IsRelativeDir()) {
       std::string fileName = string(argv[2]);
       std::string destPath = fileName.substr(0, fileName.size() - ZIP_ENDING.size());
       mkdir((destPath).c_str(), 00777);
-      UnzipDirectory(fileName, destPath);  
-      return EXIT_SUCCESS;
+      success = UnzipDirectory(fileName, destPath);
     } else {
       // Isn't unzipable
+      success = false;
+    }
+    if (success) {
+      return EXIT_SUCCESS;   
+    } else {
+      return EXIT_FAILURE;
     }
   } else {
     std::cerr << "mode " << argv[1] << " not recognized." << std::endl;
-    exit(EXIT_FAILURE);
+    return EXIT_FAILURE;
   }
-  exit(EXIT_SUCCESS);
+  return EXIT_SUCCESS;
 }
 
 static bool ZipFile(std::string fileLocation, std::string zipDestination) {
@@ -76,7 +80,7 @@ static bool ZipFile(std::string fileLocation, std::string zipDestination) {
     std::cout << "Zip Successful." << std::endl;
   } else {
     std::cout << "Zip Unsuccessful." << std::endl;
-    exit(EXIT_FAILURE);
+    return false;
   }
   return true;
 }
@@ -88,7 +92,7 @@ static bool UnzipFile(std::string fileLocation, std::string zipDestination) {
     std::cout << "Unzip Successful." << std::endl;
   } else {
     std::cout << "Unzip Unsuccessful." << std::endl;
-    exit(EXIT_FAILURE);
+    return false;
   }
   return true;
 }

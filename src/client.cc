@@ -31,6 +31,7 @@ int main(int argc, char** argv) {
   }
   
   // TODO Error detection still needs done.
+  // TODO Make sure that how we exit is consistant through the project (EXIT_SUCCESS) etc.
 
   // Execute the commands.
   string file_name(argv[2]);

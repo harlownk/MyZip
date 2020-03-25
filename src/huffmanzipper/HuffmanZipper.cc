@@ -190,9 +190,6 @@ int HuffmanZipper::WriteZipFileBody(std::fstream &zipFile,
 
     currCharEncoded = mapRef[key];
     encodingBuffer += currCharEncoded;
-    if (key == 255) {
-      std::cout << currCharEncoded << std::endl;
-    }
     if (encodingBuffer.size() > WRITE_BUFFER_SIZE * 8) {
       // Filled the buffer, write to file.
       // Trim down to a multiple of 8 for bytelength.

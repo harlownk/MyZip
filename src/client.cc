@@ -7,6 +7,8 @@
 #include <sstream>
 #include <climits>
 #include <fstream>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "client.h"
 #include "huffmanzipper/HuffmanZipper.h"
@@ -31,7 +33,8 @@ int main(int argc, char** argv) {
 
   if (string(argv[1]).compare("f") == 0) {
     std::string fileName = string(argv[2]);
-    ZipDirectory(fileName, fileName + ".mzip");  
+    mkdir((fileName + ZIP_ENDING).c_str(), 00777);
+    ZipDirectory(fileName, fileName + ZIP_ENDING);  
     return EXIT_SUCCESS;
   }
 
@@ -82,13 +85,16 @@ static void ZipDirectory(std::string currDirPath, std::string zipDirPath) {
       // Get path of zipp directory,
       // zip directory by placing all files into this directory.
       std::string newZipPathDir = zipDirPath + nextFile.GetFileName() + ZIP_ENDING;
+      // std::cout << newZipPathDir << std::endl;
+      mkdir(newZipPathDir.c_str(), 00777);
       ZipDirectory(nextFile.GetFilePath(), newZipPathDir);
     } else if (nextFile.IsFile()) {
       // Zip it
       std::string currFileName = nextFile.GetFilePath();
-      zipper.ZipFile(currFileName, zipDirPath + "/" + nextFile.GetFileName() + ZIP_ENDING);
+      std::string zipFileName = zipDirPath + "/" + nextFile.GetFileName() + ZIP_ENDING;
+      zipper.ZipFile(currFileName, zipFileName);
       // Make sure the zipped file is now in the zipped directory.
-      std::cout << zipDirPath << nextFile.GetFileName() << std::endl;
+      std::cout << zipDirPath + nextFile.GetFileName() + ZIP_ENDING << std::endl;
     }
   }
 }

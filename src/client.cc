@@ -37,15 +37,20 @@ int main(int argc, char** argv) {
   SystemFile inputFile(fileName);
   if (string(argv[1]).compare("z") == 0) {  // Zip mode
     // If FILE:
+    bool success;
     if (inputFile.IsFile()) {
-      ZipFile(fileName, fileName + ZIP_ENDING);
+      success = ZipFile(fileName, fileName + ZIP_ENDING);
     } else if (inputFile.IsDirectory() && !inputFile.IsRelativeDir()) {
-      
       mkdir((fileName + ZIP_ENDING).c_str(), 00777);
-      ZipDirectory(fileName, fileName + ZIP_ENDING);  
+      success = ZipDirectory(fileName, fileName + ZIP_ENDING);  
       return EXIT_SUCCESS;
     } else {
       // Isn't zipable
+    }
+    if (success) {
+      return EXIT_SUCCESS;   
+    } else {
+      return EXIT_FAILURE;
     }
   } else if (string(argv[1]).compare("u") == 0) {  // Unzip mode
     // If File:
@@ -70,7 +75,6 @@ int main(int argc, char** argv) {
     std::cerr << "mode " << argv[1] << " not recognized." << std::endl;
     return EXIT_FAILURE;
   }
-  return EXIT_SUCCESS;
 }
 
 static bool ZipFile(std::string fileLocation, std::string zipDestination) {

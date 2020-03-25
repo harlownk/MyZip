@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
   if (string(argv[1]).compare("z") == 0) {  // Zip mode
     // If FILE:
     if (inputFile.IsFile()) {
-      ZipFile(file_name, "");
+      ZipFile(file_name, file_name + ZIP_ENDING);
     } else if (inputFile.IsDirectory() && !inputFile.IsRelativeDir()) {
       std::string fileName = string(argv[2]);
       mkdir((fileName + ZIP_ENDING).c_str(), 00777);
@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
   } else if (string(argv[1]).compare("u") == 0) {  // Unzip mode
     // If File:
     if (inputFile.IsFile()) {
-      UnzipFile(file_name, "");
+      UnzipFile(file_name, file_name.substr(0, file_name.size() - ZIP_ENDING.size()));
     } else if (inputFile.IsDirectory() && !inputFile.IsRelativeDir()) {
       std::string fileName = string(argv[2]);
       std::string destPath = fileName.substr(0, fileName.size() - ZIP_ENDING.size());
@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
 static bool ZipFile(std::string fileLocation, std::string zipDestination) {
   HuffmanZipper zipper;
   std::cout << "Zipping " << fileLocation << "..." << std::endl;
-  if (zipper.ZipFile(fileLocation)) {
+  if (zipper.ZipFile(fileLocation, zipDestination)) {
     std::cout << "Zip Successful." << std::endl;
   } else {
     std::cout << "Zip Unsuccessful." << std::endl;
@@ -83,7 +83,7 @@ static bool ZipFile(std::string fileLocation, std::string zipDestination) {
 static bool UnzipFile(std::string fileLocation, std::string zipDestination) {
   HuffmanZipper zipper;
   std::cout << "Unzipping " << fileLocation << std::endl;
-  if (zipper.UnzipFile(fileLocation)) {
+  if (zipper.UnzipFile(fileLocation, zipDestination)) {
     std::cout << "Unzip Successful." << std::endl;
   } else {
     std::cout << "Unzip Unsuccessful." << std::endl;

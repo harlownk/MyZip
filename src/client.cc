@@ -37,6 +37,13 @@ int main(int argc, char** argv) {
     ZipDirectory(fileName, fileName + ZIP_ENDING);  
     return EXIT_SUCCESS;
   }
+  if (string(argv[1]).compare("t") == 0) {
+    std::string fileName = string(argv[2]);
+    std::string destPath = fileName.substr(0, fileName.size() - ZIP_ENDING.size());
+    mkdir((destPath).c_str(), 00777);
+    UnzipDirectory(fileName, destPath);  
+    return EXIT_SUCCESS;
+  }
 
   // TODO Add directory support.
   // Check if file given is directory or reg file
@@ -77,17 +84,17 @@ int main(int argc, char** argv) {
 }
 
 static bool ZipFile(std::string fileLocation, std::string zipDestination) {
-
+  return true;
 }
 static bool UnzipFile(std::string fileLocation, std::string zipDestination) {
-
+  return true;
 }
 
 static bool ZipDirectory(std::string currDirPath, std::string zipDirPath) {
   HuffmanZipper zipper;
   DirectoryIterator dirIter(currDirPath);
   bool currentZipSuccessful = true;
-  while (dirIter.HasNext() && currentZipSuccesful) {
+  while (dirIter.HasNext() && currentZipSuccessful) {
     util::SystemFile nextFile = dirIter.GetNext();
     if (nextFile.IsDirectory() && !nextFile.IsRelativeDir()) {
       // Get path of zipp directory,
@@ -101,14 +108,33 @@ static bool ZipDirectory(std::string currDirPath, std::string zipDirPath) {
       std::string zipFileName = zipDirPath + "/" + nextFile.GetFileName() + ZIP_ENDING;
       currentZipSuccessful = zipper.ZipFile(currFileName, zipFileName);
       // Make sure the zipped file is now in the zipped directory.
-      std::cout << zipDirPath + nextFile.GetFileName() + ZIP_ENDING << std::endl;
     }
   }
-  return currentZipSuccesful;
+  return currentZipSuccessful;
 }
 
 static bool UnzipDirectory(std::string currDirPath, std::string zipDirPath) {
-
+  // TODO This is 'hard coded' such that the file MUST have the proper zip ending
+  //   IF it doesn't then it won't construct the paths properly.
+  HuffmanZipper zipper;
+  DirectoryIterator dirIter(currDirPath);
+  bool currentUnzipSuccessful = true;
+  while (dirIter.HasNext() && currentUnzipSuccessful) {
+    util::SystemFile nextFile = dirIter.GetNext();
+    if (nextFile.IsDirectory() && !nextFile.IsRelativeDir()) {
+      std::string currFileName = nextFile.GetFileName();
+      std::string newZipPathDir = zipDirPath + "/" + (currFileName.substr(0, currFileName.size() - ZIP_ENDING.size()));
+      mkdir(newZipPathDir.c_str(), 00777);
+      currentUnzipSuccessful = UnzipDirectory(nextFile.GetFilePath(), newZipPathDir);
+    } else if (nextFile.IsFile()) {
+      // Unzip it
+      std::string currFilePath = nextFile.GetFilePath();
+      std::string currFileName = nextFile.GetFileName();
+      std::string zipFileName = zipDirPath + (currFileName.substr(0, currFileName.size() - ZIP_ENDING.size()));
+      currentUnzipSuccessful = zipper.UnzipFile(currFilePath, zipFileName);
+    }
+  }
+  return currentUnzipSuccessful;
 }
 
 static void PrintUsage() {

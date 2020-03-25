@@ -80,29 +80,31 @@ static bool ZipFile(std::string fileLocation, std::string zipDestination) {
 
 }
 static bool UnzipFile(std::string fileLocation, std::string zipDestination) {
-  
+
 }
 
 static bool ZipDirectory(std::string currDirPath, std::string zipDirPath) {
   HuffmanZipper zipper;
   DirectoryIterator dirIter(currDirPath);
-  while (dirIter.HasNext()) {
+  bool currentZipSuccessful = true;
+  while (dirIter.HasNext() && currentZipSuccesful) {
     util::SystemFile nextFile = dirIter.GetNext();
     if (nextFile.IsDirectory() && !nextFile.IsRelativeDir()) {
       // Get path of zipp directory,
       // zip directory by placing all files into this directory.
       std::string newZipPathDir = zipDirPath + nextFile.GetFileName() + ZIP_ENDING;
       mkdir(newZipPathDir.c_str(), 00777);
-      ZipDirectory(nextFile.GetFilePath(), newZipPathDir);
+      currentZipSuccessful = ZipDirectory(nextFile.GetFilePath(), newZipPathDir);
     } else if (nextFile.IsFile()) {
       // Zip it
       std::string currFileName = nextFile.GetFilePath();
       std::string zipFileName = zipDirPath + "/" + nextFile.GetFileName() + ZIP_ENDING;
-      zipper.ZipFile(currFileName, zipFileName);
+      currentZipSuccessful = zipper.ZipFile(currFileName, zipFileName);
       // Make sure the zipped file is now in the zipped directory.
       std::cout << zipDirPath + nextFile.GetFileName() + ZIP_ENDING << std::endl;
     }
   }
+  return currentZipSuccesful;
 }
 
 static bool UnzipDirectory(std::string currDirPath, std::string zipDirPath) {

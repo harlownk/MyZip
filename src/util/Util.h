@@ -1,14 +1,14 @@
 // Copright Nicholas Harlow
 
-#ifndef SRC_UTIL_H_
-#define SRC_UTIL_H_
+#ifndef SRC_UTIL_UTIL_H_
+#define SRC_UTIL_UTIL_H_
 
 #include <arpa/inet.h>        // For htonl(), etc.
 #include <boost/crc.hpp>      // for boost::crc_basic, boost::crc_optimal
 #include <bitset>
 #include <iostream>
 
-namespace huffmanzipper {
+namespace util {
 // Represents Utility functions and macros etc that the Zipper uses
 // across its various classes.
 
@@ -39,6 +39,6 @@ uint64_t htonll(uint64_t x);
 // Convers the 64bit vale to host order.
 uint64_t ntohll(uint64_t x);
 
-}  // namespace huffmanzipper
+}  // namespace util
 
 #endif  //SRC_UTIL_H_

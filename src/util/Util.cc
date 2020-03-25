@@ -8,7 +8,7 @@
 
 #include "Util.h"
 
-namespace huffmanzipper {
+namespace util {
 
 std::string FieldToBitString(uint16_t field) {
   std::bitset<16> fieldBitSet(field);
@@ -63,4 +63,4 @@ uint64_t ntohll(uint64_t x) {
           ntohl((uint32_t)((x) >> 32))));
 }
 
-}
+}  // namespace util

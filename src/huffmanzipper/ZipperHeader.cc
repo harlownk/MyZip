@@ -5,7 +5,11 @@
 #include <cstdint>
 
 #include "ZipperHeader.h"
-#include "Util.h"
+#include "../util/Util.h"
+
+using util::FieldToBitString;
+using util::ntohll;
+using util::htonll;
 
 namespace huffmanzipper {
 

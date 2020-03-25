@@ -76,7 +76,14 @@ int main(int argc, char** argv) {
   exit(EXIT_SUCCESS);
 }
 
-static void ZipDirectory(std::string currDirPath, std::string zipDirPath) {
+static bool ZipFile(std::string fileLocation, std::string zipDestination) {
+
+}
+static bool UnzipFile(std::string fileLocation, std::string zipDestination) {
+  
+}
+
+static bool ZipDirectory(std::string currDirPath, std::string zipDirPath) {
   HuffmanZipper zipper;
   DirectoryIterator dirIter(currDirPath);
   while (dirIter.HasNext()) {
@@ -85,7 +92,6 @@ static void ZipDirectory(std::string currDirPath, std::string zipDirPath) {
       // Get path of zipp directory,
       // zip directory by placing all files into this directory.
       std::string newZipPathDir = zipDirPath + nextFile.GetFileName() + ZIP_ENDING;
-      // std::cout << newZipPathDir << std::endl;
       mkdir(newZipPathDir.c_str(), 00777);
       ZipDirectory(nextFile.GetFilePath(), newZipPathDir);
     } else if (nextFile.IsFile()) {
@@ -97,6 +103,10 @@ static void ZipDirectory(std::string currDirPath, std::string zipDirPath) {
       std::cout << zipDirPath + nextFile.GetFileName() + ZIP_ENDING << std::endl;
     }
   }
+}
+
+static bool UnzipDirectory(std::string currDirPath, std::string zipDirPath) {
+
 }
 
 static void PrintUsage() {

@@ -33,8 +33,9 @@ int main(int argc, char** argv) {
     PrintUsage();
   }
   // Execute the commands.
-  string fileName = string(argv[2]);
-  SystemFile inputFile(fileName);
+  string givenFileName = string(argv[2]);
+  SystemFile inputFile(givenFileName);
+  string fileName = inputFile.GetFilePath();
   if (string(argv[1]).compare("z") == 0) {  // Zip mode
     // If FILE:
     bool success;
@@ -46,6 +47,7 @@ int main(int argc, char** argv) {
       return EXIT_SUCCESS;
     } else {
       // Isn't zipable
+      success = false;
     }
     if (success) {
       return EXIT_SUCCESS;   

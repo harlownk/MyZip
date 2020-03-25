@@ -10,7 +10,13 @@
 
 namespace util {
 
-SystemFile::SystemFile(std::string filePath) : filePath_(filePath) {}
+SystemFile::SystemFile(std::string filePath) {
+  if (!filePath.substr(filePath.size() - 1).compare("/")) {
+    filePath_ = filePath.substr(0, filePath.size() - 1);
+  } else {
+    filePath_ = filePath;
+  }
+}
 
 SystemFile::~SystemFile() {}
 

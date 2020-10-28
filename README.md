@@ -1,4 +1,4 @@
-# Simple Zip and Unzip
+# MyZip: a Simple Zip and Unzip utility
 
 ## Project Reflection
 ### Things I learned

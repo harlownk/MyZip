@@ -32,6 +32,9 @@ int main(int argc, char** argv) {
   } else if (argc != 3) {
     PrintUsage();
   }
+
+  // Create a pthread thread pool.
+
   // Execute the commands.
   string givenFileName = string(argv[2]);
   SystemFile inputFile(givenFileName);

@@ -7,6 +7,7 @@
 #include <sstream>
 #include <climits>
 #include <fstream>
+#include <pthread>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -33,7 +34,7 @@ int main(int argc, char** argv) {
     PrintUsage();
   }
 
-  // Create a pthread thread pool.
+  // Create a thread pool.
 
   // Execute the commands.
   string givenFileName = string(argv[2]);

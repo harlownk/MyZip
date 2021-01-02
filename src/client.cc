@@ -7,7 +7,7 @@
 #include <sstream>
 #include <climits>
 #include <fstream>
-#include <pthread>
+#include <thread>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -25,6 +25,10 @@ using util::SystemFile;
 
 static const string ZIP_ENDING = ".mzip";
 
+void hello() {
+  std::cout << "Hello" << std::endl;
+}
+
 int main(int argc, char** argv) {
   // Do Preliminary checks.
   if (argc == 1) {
@@ -35,7 +39,7 @@ int main(int argc, char** argv) {
   }
 
   // Create a thread pool.
-
+  std::thread helloThread(hello);
   // Execute the commands.
   string givenFileName = string(argv[2]);
   SystemFile inputFile(givenFileName);

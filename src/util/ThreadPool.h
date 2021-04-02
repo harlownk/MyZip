@@ -12,6 +12,10 @@
 
 namespace util {
 
+// Requires 3 Types:
+// The type of the actual functor object
+// The type of functor's operator()
+// The return type of the functor's operator()
 template <typename Obj, typename Fn, typename Ret>
 class ThreadPool {
  public:
@@ -38,8 +42,6 @@ class ThreadPool {
     this->queue_->getConditionVariable()->notify_all();
     return future;
   }
-
-  bool isAlive();
   
   void doWork() {
     // Block with condition variable until thtere is work in the queue/ OR return if pool is dead.

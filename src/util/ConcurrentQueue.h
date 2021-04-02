@@ -9,6 +9,7 @@
 
 namespace util {
 
+// T is the type of object that is in the queue.
 template <typename T>
 class ConcurrentQueue {
  public:
@@ -44,6 +45,8 @@ class ConcurrentQueue {
     return this->cv_;
   }
 
+  // returns the Mutex that handles the locking. Must be used responsibly. Will 
+  // change when I decided how to handle atomic actions and the condition variable.
   std::recursive_mutex *getLock() {
     return this->mutex_;
   }
@@ -58,7 +61,7 @@ class ConcurrentQueue {
  private:
   std::queue<T> *workQueue_;
   std::recursive_mutex *mutex_;
-  std::unique_lock<std::recursive_mutex> *lock_;  // Requires mutex to be initialized.
+  std::unique_lock<std::recursive_mutex> *lock_;
   std::condition_variable_any *cv_;
 };  // class ConcurrentQueue
 

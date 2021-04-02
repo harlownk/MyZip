@@ -24,4 +24,4 @@ class SystemFile {
 
 }  // namespace util
 
-#endif  // SRC_SYSTEMFILE_H_
+#endif  // SRC_UTIL_SYSTEMFILE_H_

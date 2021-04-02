@@ -14,6 +14,7 @@
 #include "client.h"
 #include "huffmanzipper/HuffmanZipper.h"
 #include "util/DirectoryIterator.h"
+#include "util/ThreadPool.h"
 
 using std::string;
 using huffmanzipper::HuffmanZipper;
@@ -29,6 +30,14 @@ void hello() {
   std::cout << "Hello" << std::endl;
 }
 
+class Hello {
+ public:
+  int operator() () const {
+    std::cout << "Hellllo" << std::endl;
+    return 1;
+  }
+};
+
 int main(int argc, char** argv) {
   // Do Preliminary checks.
   if (argc == 1) {
@@ -39,7 +48,13 @@ int main(int argc, char** argv) {
   }
 
   // Create a thread pool.
-  std::thread helloThread(hello);
+  // std::thread helloThread(hello);
+  util::ThreadPool<Hello, int(), int> pool(2);
+  Hello *one = new Hello();
+  Hello *two = new Hello();
+  auto res1 = pool.run(one);
+  auto res2 = pool.run(two);
+  std::cout << res1.get() + res2.get() << std::endl;
   // Execute the commands.
   string givenFileName = string(argv[2]);
   SystemFile inputFile(givenFileName);

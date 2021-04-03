@@ -30,12 +30,18 @@ void hello() {
   std::cout << "Hello" << std::endl;
 }
 
-class Hello {
+class ZipDirThread {
  public:
-  int operator() () const {
-    std::cout << "Hellllo" << std::endl;
-    return 1;
+  ZipDirThread(std::string old, std::string newFile) {
+    this->oldFile = old;
+    this->newFile = newFile;
   }
+
+  void operator() () const {
+    ZipDirectory(this->oldFile, this->newFile);
+  }
+  std::string oldFile;
+  std::string newFile;
 };
 
 int main(int argc, char** argv) {
@@ -49,12 +55,6 @@ int main(int argc, char** argv) {
 
   // Create a thread pool.
   // std::thread helloThread(hello);
-  util::ThreadPool<Hello, int(), int> pool(2);
-  Hello *one = new Hello();
-  Hello *two = new Hello();
-  auto res1 = pool.run(one);
-  auto res2 = pool.run(two);
-  std::cout << res1.get() + res2.get() << std::endl;
   // Execute the commands.
   string givenFileName = string(argv[2]);
   SystemFile inputFile(givenFileName);
@@ -66,8 +66,10 @@ int main(int argc, char** argv) {
       success = ZipFile(fileName, fileName + ZIP_ENDING);
     } else if (inputFile.IsDirectory() && !inputFile.IsRelativeDir()) {
       mkdir((fileName + ZIP_ENDING).c_str(), 00777);
-      success = ZipDirectory(fileName, fileName + ZIP_ENDING);  
-      return EXIT_SUCCESS;
+      
+      // util::ThreadPool<ZipDirThread, void(), void> pool(4);
+      
+      success = ZipDirectory(fileName, fileName + ZIP_ENDING);
     } else {
       // Isn't zipable
       success = false;

@@ -131,6 +131,7 @@ static bool UnzipFile(std::string fileLocation, std::string zipDestination) {
 static bool ZipDirectory(std::string currDirPath, std::string zipDirPath) {
   HuffmanZipper zipper;
   DirectoryIterator dirIter(currDirPath);
+  std::cout << "Zipping " << currDirPath << std::endl;
   bool currentZipSuccessful = true;
   while (dirIter.HasNext() && currentZipSuccessful) {
     util::SystemFile nextFile = dirIter.GetNext();
@@ -156,6 +157,7 @@ static bool UnzipDirectory(std::string currDirPath, std::string zipDirPath) {
   //   IF it doesn't then it won't construct the paths properly.
   HuffmanZipper zipper;
   DirectoryIterator dirIter(currDirPath);
+  std::cout << "Unzipping " << currDirPath << std::endl;
   bool currentUnzipSuccessful = true;
   while (dirIter.HasNext() && currentUnzipSuccessful) {
     util::SystemFile nextFile = dirIter.GetNext();

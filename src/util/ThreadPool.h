@@ -44,7 +44,7 @@ class ThreadPool {
   }
   
   void doWork() {
-    // Block with condition variable until thtere is work in the queue/ OR return if pool is dead.
+    // Block with condition variable until there is work in the queue/ OR return if pool is dead.
     // Execute one item of work from the queue.
     std::unique_lock<std::recursive_mutex> lock(*this->queue_->getLock(), std::defer_lock);
     lock.lock();
@@ -64,7 +64,7 @@ class ThreadPool {
   util::ConcurrentQueue<std::packaged_task<Fn> *> *queue_;
   std::vector<std::thread *> threads_;
   bool isAlive_;  // Only way to clean up fully is to shut down all threads. Only way to stop threds is to have them check this flag.
-  static void threadLoop(ThreadPool *pool) {
+  void threadLoop(ThreadPool *pool) {
     while (pool->isAlive_) {
       pool->doWork();
     }

@@ -64,7 +64,7 @@ class ThreadPool {
   util::ConcurrentQueue<std::packaged_task<Fn> *> *queue_;
   std::vector<std::thread *> threads_;
   bool isAlive_;  // Only way to clean up fully is to shut down all threads. Only way to stop threds is to have them check this flag.
-  void threadLoop(ThreadPool *pool) {
+  static void threadLoop(ThreadPool *pool) {
     while (pool->isAlive_) {
       pool->doWork();
     }

@@ -53,8 +53,7 @@ int main(int argc, char** argv) {
     PrintUsage();
   }
 
-  // Create a thread pool.
-  // std::thread helloThread(hello);
+  // Create a thread pool based on the type of work to do.
   // Execute the commands.
   string givenFileName = string(argv[2]);
   SystemFile inputFile(givenFileName);
@@ -65,10 +64,9 @@ int main(int argc, char** argv) {
     if (inputFile.IsFile()) {
       success = ZipFile(fileName, fileName + ZIP_ENDING);
     } else if (inputFile.IsDirectory() && !inputFile.IsRelativeDir()) {
+      util::ThreadPool<ZipDirThread, void(), void> pool(4);
+
       mkdir((fileName + ZIP_ENDING).c_str(), 00777);
-      
-      // util::ThreadPool<ZipDirThread, void(), void> pool(4);
-      
       success = ZipDirectory(fileName, fileName + ZIP_ENDING);
     } else {
       // Isn't zipable

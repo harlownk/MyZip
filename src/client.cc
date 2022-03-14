@@ -37,8 +37,8 @@ class ZipDirThread {
     this->newFile = newFile;
   }
 
-  void operator() () const {
-    ZipDirectory(this->oldFile, this->newFile);
+  bool operator() () const {
+    return ZipDirectory(this->oldFile, this->newFile);
   }
   std::string oldFile;
   std::string newFile;
@@ -64,14 +64,13 @@ int main(int argc, char** argv) {
     if (inputFile.IsFile()) {
       success = ZipFile(fileName, fileName + ZIP_ENDING);
     } else if (inputFile.IsDirectory() && !inputFile.IsRelativeDir()) {
-      util::ThreadPool<ZipDirThread, void(), void> pool(4);
-
       mkdir((fileName + ZIP_ENDING).c_str(), 00777);
       success = ZipDirectory(fileName, fileName + ZIP_ENDING);
     } else {
       // Isn't zipable
       success = false;
     }
+
     if (success) {
       return EXIT_SUCCESS;   
     } else {
@@ -129,7 +128,10 @@ static bool UnzipFile(std::string fileLocation, std::string zipDestination) {
 static bool ZipDirectory(std::string currDirPath, std::string zipDirPath) {
   HuffmanZipper zipper;
   DirectoryIterator dirIter(currDirPath);
+  util::ThreadPool<ZipDirThread, bool(), bool> pool(4); 
+
   std::cout << "Zipping " << currDirPath << std::endl;
+
   bool currentZipSuccessful = true;
   while (dirIter.HasNext() && currentZipSuccessful) {
     util::SystemFile nextFile = dirIter.GetNext();
@@ -138,7 +140,8 @@ static bool ZipDirectory(std::string currDirPath, std::string zipDirPath) {
       // zip directory by placing all files into this directory.
       std::string newZipPathDir = zipDirPath + nextFile.GetFileName() + ZIP_ENDING;
       mkdir(newZipPathDir.c_str(), 00777);
-      currentZipSuccessful = ZipDirectory(nextFile.GetFilePath(), newZipPathDir);
+      std::future<bool> currentZipSuccessResult = pool.run(new ZipDirThread(nextFile.GetFilePath(), newZipPathDir));
+      // currentZipSuccessful = ZipDirectory(nextFile.GetFilePath(), newZipPathDir);
     } else if (nextFile.IsFile()) {
       // Zip it
       std::string currFileName = nextFile.GetFilePath();

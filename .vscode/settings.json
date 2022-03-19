@@ -49,6 +49,11 @@
     "thread": "cpp",
     "cinttypes": "cpp",
     "typeinfo": "cpp",
-    "future": "cpp"
+    "future": "cpp",
+    "bit": "cpp",
+    "functional": "cpp",
+    "iterator": "cpp",
+    "numeric": "cpp",
+    "random": "cpp"
   }
 }

@@ -32,7 +32,15 @@ class ThreadPool {
   ~ThreadPool() {
     this->isAlive_ = false;
     this->queue_->getConditionVariable()->notify_all();  // Wake all threads so they aren't blocking forever.
+    
     // Join all the threads. The threads only complete when the threadpool is 'dead'
+    for (uint i = 0; i < this->threads_.size(); i++) {
+      std::thread *currThread = this->threads_[i];
+      currThread->join();
+      delete currThread;
+    }
+
+    delete this->queue_;
   }
 
   std::future<Ret> run(Obj *work) {
@@ -58,6 +66,7 @@ class ThreadPool {
     std::packaged_task<Fn> *task = this->queue_->remove();
     lock.unlock();
     (*task)();  // The client holds the future that has the result of this call.
+    delete task;
   }
 
  private:

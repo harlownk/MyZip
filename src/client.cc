@@ -10,6 +10,7 @@
 #include <thread>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <chrono>
 
 #include "client.h"
 #include "huffmanzipper/HuffmanZipper.h"
@@ -133,6 +134,7 @@ static bool ZipDirectory(std::string currDirPath, std::string zipDirPath) {
   std::cout << "Zipping " << currDirPath << std::endl;
 
   bool currentZipSuccessful = true;
+  std::queue<std::future<bool>> asyncResults;
   while (dirIter.HasNext() && currentZipSuccessful) {
     util::SystemFile nextFile = dirIter.GetNext();
     if (nextFile.IsDirectory() && !nextFile.IsRelativeDir()) {
@@ -140,16 +142,29 @@ static bool ZipDirectory(std::string currDirPath, std::string zipDirPath) {
       // zip directory by placing all files into this directory.
       std::string newZipPathDir = zipDirPath + nextFile.GetFileName() + ZIP_ENDING;
       mkdir(newZipPathDir.c_str(), 00777);
-      std::future<bool> currentZipSuccessResult = pool.run(new ZipDirThread(nextFile.GetFilePath(), newZipPathDir));
-      // currentZipSuccessful = ZipDirectory(nextFile.GetFilePath(), newZipPathDir);
+      ZipDirThread zipThread(nextFile.GetFilePath(), newZipPathDir);
+      std::future<bool> currentZipSuccessResult = pool.run(&zipThread);
+      asyncResults.push(std::move(currentZipSuccessResult));
     } else if (nextFile.IsFile()) {
       // Zip it
       std::string currFileName = nextFile.GetFilePath();
       std::string zipFileName = zipDirPath + "/" + nextFile.GetFileName() + ZIP_ENDING;
-      currentZipSuccessful = zipper.ZipFile(currFileName, zipFileName);
+      currentZipSuccessful = currentZipSuccessful && zipper.ZipFile(currFileName, zipFileName);
       // Make sure the zipped file is now in the zipped directory.
     }
   }
+  
+  // Check the async results to make sure there was success/failure.
+  while (!asyncResults.empty()) {
+    std::future<bool> currentRes = std::move(asyncResults.front());
+    asyncResults.pop();
+    if (currentRes.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+      currentZipSuccessful = currentZipSuccessful && currentRes.get();
+    } else {
+      asyncResults.push(std::move(currentRes));
+    }
+  }
+
   return currentZipSuccessful;
 }
 
